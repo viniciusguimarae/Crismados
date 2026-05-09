@@ -141,6 +141,21 @@ export function updateRegisterButton(state) {
 
 // ─── RANKING ──────────────────────────────────────────────────
 
+function toRomanNumeral(num) {
+  const roman = {
+    M: 1000, CM: 900, D: 500, CD: 400,
+    C: 100, XC: 90, L: 50, XL: 40,
+    X: 10, IX: 9, V: 5, IV: 4, I: 1
+  };
+  let str = '';
+  for (let i of Object.keys(roman)) {
+    let q = Math.floor(num / roman[i]);
+    num -= q * roman[i];
+    str += i.repeat(q);
+  }
+  return str;
+}
+
 /**
  * Renderiza a lista de ranking.
  * @param {HTMLElement} listEl
@@ -174,7 +189,7 @@ export function renderRanking(listEl, members, attendanceMap, totalPossible) {
       <div class="avatar avatar--sm">${initials}</div>
       <div class="ranking-row__info">
         <div class="ranking-row__name">${member.name}</div>
-        <div class="ranking-row__count">${count} de ${possible} ${possible === 1 ? 'domingo' : 'domingos'}</div>
+        <div class="ranking-row__count">${count} missas registradas</div>
         <div class="ranking-row__progress-track">
           <div class="ranking-row__progress-fill" data-pct="${pct}"></div>
         </div>
@@ -320,8 +335,9 @@ export function renderHistory(container, allAttendances, members) {
     
     // Calcula contagem no mês
     const counts = {};
+    members.forEach(m => counts[m.id] = 0);
     byMonth[monthKey].forEach(att => {
-      counts[att.member_id] = (counts[att.member_id] || 0) + 1;
+      if (counts[att.member_id] !== undefined) counts[att.member_id]++;
     });
 
     // Ordena membros por count
