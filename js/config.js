@@ -14,7 +14,7 @@
 // ============================================================
 
 export const SUPABASE_URL     = 'https://kswdnujthxtwzhamhhfe.supabase.co';
-export const SUPABASE_ANON_KEY = 'sb_publishable_evkis287e07eb509ef2d2d907084511516e5';
+export const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtzd2RudWp0aHh0d3poYW1oaGZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNjc2NzAsImV4cCI6MjA5Mzg0MzY3MH0.3ljwlifeQGb6UpPNVBo521nzplJ67JRn9XLbZiSyyS8';
 
 // ─── Modo de desenvolvimento ──────────────────────────────────
 // Defina como true para simular que hoje é domingo (útil para testar o botão)
