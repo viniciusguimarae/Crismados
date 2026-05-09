@@ -195,6 +195,12 @@ function openRegisterModal() {
   title.textContent = 'Registrar Missa';
   errorMsg.classList.add('hidden');
   
+  const btnSave = document.getElementById('btn-save-mass');
+  if (btnSave) {
+    btnSave.textContent = 'Registrar missa';
+    btnSave.disabled = false;
+  }
+  
   // Create chips for last 4 days
   chipsContainer.innerHTML = '';
   const pastDays = getPastDays(3);
@@ -237,6 +243,12 @@ function openEditModal(attendance) {
   document.getElementById('input-mass-id').value = attendance.id;
   title.textContent = 'Editar Missa';
   errorMsg.classList.add('hidden');
+  
+  const btnSave = document.getElementById('btn-save-mass');
+  if (btnSave) {
+    btnSave.textContent = 'Salvar alterações';
+    btnSave.disabled = false;
+  }
   
   const dStr = attendance.mass_date || attendance.sunday_date;
   dateInput.value = dStr;
@@ -282,12 +294,19 @@ async function handleSaveMass() {
   btnSave.disabled = true;
 
   let success = false;
+  let errorObj = null;
+  let isDuplicate = false;
+
   if (id) {
     const res = await updateAttendance(id, { mass_date: dateStr, location, mass_time: time });
     success = res.success;
+    errorObj = res.error;
+    isDuplicate = res.duplicate;
   } else {
     const res = await registerAttendance(member.id, dateStr, monthKey, location, time);
     success = res.success;
+    errorObj = res.error;
+    isDuplicate = res.duplicate;
   }
 
   if (success) {
@@ -295,8 +314,11 @@ async function handleSaveMass() {
     loadMemberPanel();
     modal.classList.add('hidden');
     showToast(`Missa salva, ${member.name.split(' ')[0]}!`, 'success');
+  } else if (isDuplicate) {
+    errorMsg.classList.remove('hidden');
   } else {
-    showToast('Erro ao salvar: ' + (res.error?.message || res.error || 'Erro desconhecido'), 'error');
+    const errText = errorObj?.message || JSON.stringify(errorObj) || 'Erro desconhecido';
+    showToast('Erro Supabase: ' + errText, 'error');
   }
 
   btnSave.textContent = oldText;
