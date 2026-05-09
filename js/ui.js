@@ -6,7 +6,7 @@
 import {
   toDateString, getSundayOrdinalLabel, getCandleHeightClass,
   getCurrentMonthName, toRomanNumeral, getPastSundaysInCurrentMonth,
-  getCurrentSundayDateString, isSunday,
+  getCurrentSundayDateString, isSunday, formatMonthName, getSundaysInMonth
 } from './dates.js';
 import { getInitials } from './members.js';
 import { animateProgressBar } from './animations.js';
@@ -33,7 +33,7 @@ export function renderCandles(container, sundays, attendedDates, currentSundaySt
     const dayNum = String(sunday.getDate()).padStart(2, '0');
 
     const stateClass = isLit ? 'candle--lit' : 'candle--unlit';
-    const currentClass = (!isLit && isCurrent) ? 'candle--current' : '';
+    const currentClass = (!isLit && isCurrent) ? 'candle--current current-sunday-pulse' : '';
 
     const wrapper = document.createElement('div');
     wrapper.className = 'candle-wrapper';
@@ -246,34 +246,95 @@ export function updateFidelityBar(totalAttended, totalPossible) {
 // ─── HISTÓRICO ────────────────────────────────────────────────
 
 /**
- * Renderiza a lista de histórico do mês atual.
+ * Renderiza a lista de histórico agrupada por meses.
  * @param {HTMLElement} listEl
  * @param {Array} members
- * @param {object} attendanceMap - { [memberId]: string[] }
- * @param {number} totalSundays - total de domingos do mês
+ * @param {string[]} uniqueMonths - ex: ['2026-05', '2026-04']
+ * @param {object} attendancesByMonth - dicionário de arrays de presenças
  */
-export function renderHistory(listEl, members, attendanceMap, totalSundays) {
+export function renderHistory(listEl, members, uniqueMonths, attendancesByMonth) {
   listEl.innerHTML = '';
 
-  const sorted = [...members].sort((a, b) => {
-    const cA = (attendanceMap[a.id] || []).length;
-    const cB = (attendanceMap[b.id] || []).length;
-    return cB - cA;
-  });
+  uniqueMonths.forEach(monthKey => {
+    // Calcula nome do mês e total de domingos daquele mês
+    const [yStr, mStr] = monthKey.split('-');
+    const year = parseInt(yStr, 10);
+    const month = parseInt(mStr, 10) - 1; // 0-indexed
+    const monthName = formatMonthName(year, month);
+    
+    // Pega todos os domingos daquele mês (não apenas os passados)
+    const monthSundays = getSundaysInMonth(year, month);
+    const totalPossible = monthSundays.length;
 
-  sorted.forEach(member => {
-    const count = (attendanceMap[member.id] || []).length;
-    const complete = count === totalSundays && totalSundays > 0;
-    const initials = member.initials || getInitials(member.name);
+    const monthAtts = attendancesByMonth[monthKey] || [];
+    
+    // Monta mapa de presenças por membro para este mês
+    const attendanceMap = {};
+    members.forEach(m => attendanceMap[m.id] = 0);
+    monthAtts.forEach(a => {
+      if (attendanceMap[a.member_id] !== undefined) {
+        attendanceMap[a.member_id]++;
+      }
+    });
 
-    const row = document.createElement('div');
-    row.className = 'history-row';
-    row.innerHTML = `
-      <div class="avatar avatar--sm">${initials}</div>
-      <div class="history-row__name">${member.name}</div>
-      <div class="history-row__count">${count}/${totalSundays}</div>
-      ${complete ? '<div class="history-row__badge" title="Completou o mês">✦</div>' : ''}
+    // Acha quem tem 100% e o maior número de presenças
+    let maxCount = 0;
+    Object.values(attendanceMap).forEach(c => {
+      if (c > maxCount) maxCount = c;
+    });
+
+    const monthContainer = document.createElement('div');
+    monthContainer.className = 'history-month-block';
+    monthContainer.style.marginBottom = '32px';
+
+    monthContainer.innerHTML = `
+      <h3 style="color: var(--gold); font-size: 15px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; text-align: center;">${monthName}</h3>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        ${members.map(member => {
+          const count = attendanceMap[member.id] || 0;
+          const is100Percent = count === totalPossible && totalPossible > 0;
+          const isTop = count === maxCount && count > 0;
+          const initials = member.initials || member.name.slice(0, 2).toUpperCase();
+          
+          return \`
+            <div class="ranking-row" style="padding: 12px 16px;">
+              <div class="avatar avatar--sm">\${initials}</div>
+              <div class="ranking-row__info" style="flex: 1; display: flex; justify-content: space-between; align-items: center;">
+                <div class="ranking-row__name" style="margin-bottom: 0;">
+                  \${member.name}
+                  \${isTop ? '<span title="Mais presenças no mês" style="color: var(--gold); margin-left: 4px; font-size: 14px;">♔</span>' : ''}
+                  \${is100Percent ? '<span title="Completou o mês" style="color: var(--gold); margin-left: 4px; font-size: 14px;">✦</span>' : ''}
+                </div>
+                <div class="ranking-row__count" style="margin-top: 0; font-size: 14px;">\${count}/\${totalPossible}</div>
+              </div>
+            </div>
+          \`;
+        }).join('')}
+      </div>
     `;
-    listEl.appendChild(row);
+
+    listEl.appendChild(monthContainer);
   });
+}
+
+/**
+ * Renderiza o status do mês atual para o admin.
+ */
+export function renderAdminMonthStatus(container, members, monthAttendances, totalPossible) {
+  const map = {};
+  members.forEach(m => map[m.id] = 0);
+  monthAttendances.forEach(a => {
+    if (map[a.member_id] !== undefined) map[a.member_id]++;
+  });
+
+  container.innerHTML = members.map(m => {
+    return \`
+      <div class="ranking-row" style="padding: 8px 12px; min-height: unset;">
+        <div class="ranking-row__info" style="flex: 1; display: flex; justify-content: space-between; flex-direction: row; align-items: center;">
+          <span style="color: var(--cream); font-size: 13px;">\${m.name}</span>
+          <span style="color: var(--gold); font-size: 13px;">\${map[m.id] || 0}/\${totalPossible} domingos</span>
+        </div>
+      </div>
+    \`;
+  }).join('');
 }

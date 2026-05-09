@@ -30,7 +30,7 @@ export async function getMembers() {
   try {
     const { data, error } = await getClient()
       .from('members')
-      .select('id, name')
+      .select('id, name, is_admin')
       .order('name');
     if (error) throw error;
     return { data, error: null };
@@ -149,6 +149,46 @@ export async function registerAttendance(memberId, sundayDate, monthKey) {
   } catch (error) {
     console.error('[Supabase] registerAttendance:', error);
     return { success: false, duplicate: false, error };
+  }
+}
+
+/**
+ * Remove uma presença (apenas Admin).
+ * @param {string} memberId
+ * @param {string} sundayDate
+ * @returns {Promise<{ success: boolean, error: Error|null }>}
+ */
+export async function removeAttendance(memberId, sundayDate) {
+  try {
+    const { error } = await getClient()
+      .from('attendances')
+      .delete()
+      .eq('member_id', memberId)
+      .eq('sunday_date', sundayDate);
+
+    if (error) throw error;
+    return { success: true, error: null };
+  } catch (error) {
+    console.error('[Supabase] removeAttendance:', error);
+    return { success: false, error };
+  }
+}
+
+/**
+ * Busca TODAS as presenças (para histórico e admin).
+ * @returns {Promise<{ data: Array|null, error: Error|null }>}
+ */
+export async function getAllAttendances() {
+  try {
+    const { data, error } = await getClient()
+      .from('attendances')
+      .select('*')
+      .order('sunday_date', { ascending: false });
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error('[Supabase] getAllAttendances:', error);
+    return { data: null, error };
   }
 }
 

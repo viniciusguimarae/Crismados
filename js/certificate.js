@@ -100,11 +100,9 @@ export function renderCertificate(container, member, eligibility) {
   } else {
     // Certificado bloqueado
     const remaining = eligibility.total - eligibility.attended;
-    const pastRemaining = eligibility.total - eligibility.pastTotal;
+    const msg = "Faltam " + remaining + (remaining === 1 ? ' domingo' : ' domingos') + " para completar " + monthWord + ".";
 
-    const msg = eligibility.monthComplete
-      ? `Faltam ${remaining} ${remaining === 1 ? 'missa' : 'missas'} para completar ${monthWord}.`
-      : `Faltam ${pastRemaining} ${pastRemaining === 1 ? 'domingo' : 'domingos'} para completar ${monthWord}.`;
+
 
     container.innerHTML = `
       <div class="certificate-locked">

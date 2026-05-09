@@ -8,20 +8,20 @@ import {
   getCurrentMonthKey, getCurrentMonthName,
   getSundaysInCurrentMonth, getPastSundaysInCurrentMonth,
   getCurrentSundayDateString, calculateStreak, toDateString,
-  isRegistrationOpen, getMostRecentSunday,
+  isRegistrationOpen, getMostRecentSunday, formatMonthName, getSundaysInMonth
 } from './dates.js';
 import {
-  getMembers, getMonthAttendances, registerAttendance,
-  onAuthStateChange,
+  getMembers, registerAttendance,
+  onAuthStateChange, getAllAttendances, removeAttendance
 } from './supabase.js';
 import {
   showToast, triggerAllPresentEffect,
   lightCandle, fadeInElement,
 } from './animations.js';
 import {
-  renderCandles, renderMemberCards, updatePanelHeader,
+  renderCandles, updatePanelHeader,
   updateStats, updateRegisterButton, renderRanking,
-  renderOrbs, updateFidelityBar, renderHistory,
+  renderOrbs, updateFidelityBar, renderHistory, renderAdminMonthStatus
 } from './ui.js';
 import { renderCertificate, checkCertificateEligibility } from './certificate.js';
 import { initAuth, renderAuthScreen, handleLogout } from './auth.js';
@@ -37,13 +37,14 @@ const state = {
 
   // Dados carregados do Supabase
   members: [],
-  monthAttendances: [],
+  allAttendances: [], // TODAS as presenças (para histórico e admin)
+  monthAttendances: [], // Filtrado para o mês atual
 
   // Cache computado
   memberAttendanceDates: [],
   todayPresentIds: [],
 
-  // Dados calculados do mês
+  // Dados calculados do mês atual
   allSundays: [],
   pastSundays: [],
   currentMonthKey: '',
@@ -95,7 +96,7 @@ async function init() {
 
 /**
  * Chamado pelo auth.js quando login/cadastro for bem-sucedido.
- * @param {object} member - { id, name, auth_user_id }
+ * @param {object} member - { id, name, auth_user_id, is_admin }
  */
 async function onMemberAuthenticated(member) {
   state.currentMember = member;
@@ -107,6 +108,12 @@ async function onMemberAuthenticated(member) {
   } catch (err) {
     showToast('Erro ao carregar dados. Verifique sua conexão.', 'error');
     console.error('[App] Erro ao carregar dados:', err);
+  }
+
+  // Mostra aba Admin se for admin
+  const adminTabBtn = document.getElementById('nav-admin');
+  if (adminTabBtn && member.is_admin) {
+    adminTabBtn.classList.remove('hidden');
   }
 
   showLoadingOverlay(false);
@@ -124,10 +131,13 @@ async function loadInitialData() {
   if (membersError) throw membersError;
   state.members = mergeWithSupabase(supabaseMembers || []);
 
-  // Busca presenças do mês
-  const { data: attendances, error: attError } = await getMonthAttendances(state.currentMonthKey);
+  // Busca TODAS as presenças
+  const { data: attendances, error: attError } = await getAllAttendances();
   if (attError) throw attError;
-  state.monthAttendances = attendances || [];
+  state.allAttendances = attendances || [];
+  
+  // Filtra mês atual
+  state.monthAttendances = state.allAttendances.filter(a => a.month_key === state.currentMonthKey);
 
   // Presentes no domingo de referência
   state.todayPresentIds = state.monthAttendances
@@ -136,8 +146,10 @@ async function loadInitialData() {
 }
 
 async function reloadAttendances() {
-  const { data } = await getMonthAttendances(state.currentMonthKey);
-  state.monthAttendances = data || [];
+  const { data: attendances } = await getAllAttendances();
+  state.allAttendances = attendances || [];
+  state.monthAttendances = state.allAttendances.filter(a => a.month_key === state.currentMonthKey);
+  
   state.todayPresentIds = state.monthAttendances
     .filter(a => a.sunday_date === state.currentSundayStr)
     .map(a => a.member_id);
@@ -159,7 +171,7 @@ function loadMemberPanel() {
   if (qtEl) qtEl.textContent = `"${quote.text}"`;
   if (qrEl) qrEl.textContent = quote.ref;
 
-  // Presenças do membro atual
+  // Presenças do membro atual no mês
   state.memberAttendanceDates = state.monthAttendances
     .filter(a => a.member_id === member.id)
     .map(a => a.sunday_date);
@@ -206,7 +218,11 @@ async function handleRegister() {
 
   // UI otimista
   updateRegisterButton('done');
-  showToast('Registrando sua presença...', 'info', 1500);
+  showToast(`Deo Gratias, ${member.name.split(' ')[0]}! Sua presença foi registrada.`, 'info', 2000);
+  
+  // Acende a vela instantaneamente
+  const sundayIndex = state.allSundays.findIndex(s => toDateString(s) === state.currentSundayStr);
+  if (sundayIndex !== -1) lightCandle(sundayIndex);
 
   // Usa sempre a data do domingo mais recente (funciona Dom e Seg)
   const sundayDate = toDateString(getMostRecentSunday());
@@ -215,17 +231,13 @@ async function handleRegister() {
   const { success, duplicate, error } = await registerAttendance(member.id, sundayDate, monthKey);
 
   if (success) {
-    state.memberAttendanceDates = [...state.memberAttendanceDates, sundayDate];
     await reloadAttendances();
+    state.memberAttendanceDates = state.monthAttendances
+      .filter(a => a.member_id === member.id)
+      .map(a => a.sunday_date);
 
     const streak = calculateStreak(state.memberAttendanceDates, state.allSundays);
     updateStats(state.memberAttendanceDates.length, streak);
-
-    // Acende a vela correta
-    const sundayIndex = state.allSundays.findIndex(s => toDateString(s) === sundayDate);
-    if (sundayIndex !== -1) lightCandle(sundayIndex);
-
-    showToast('✦ Presença registrada. Deo Gratias.', 'success');
 
     // Todos presentes?
     if (state.todayPresentIds.length >= state.members.length && state.members.length > 0) {
@@ -237,13 +249,138 @@ async function handleRegister() {
     if (certContainer) {
       const eligibility = checkCertificateEligibility(state.memberAttendanceDates, state.allSundays);
       renderCertificate(certContainer, member, eligibility);
+      
+      if (eligibility.unlocked && state.memberAttendanceDates.length === state.allSundays.length) {
+        setTimeout(() => {
+          showToast(`Parabéns, ${member.name.split(' ')[0]}! Seu pergaminho foi selado.`, 'success', 3000);
+        }, 1500);
+      }
     }
   } else if (duplicate) {
-    showToast('Presença já registrada para este domingo.', 'error');
+    // Reverter otimismo se der erro
+    // Na prática, é difícil cair aqui sem ter pego no local check, mas por segurança:
     updateRegisterButton('done');
   } else {
     showToast('Não foi possível registrar. Tente novamente.', 'error');
     updateRegisterButton('active');
+  }
+}
+
+// ─── ADMIN PANEL ──────────────────────────────────────────────
+
+function loadAdminPanel() {
+  if (!state.currentMember || !state.currentMember.is_admin) return;
+
+  const insertMemberSel = document.getElementById('admin-insert-member');
+  const insertSundaySel = document.getElementById('admin-insert-sunday');
+  const removeMemberSel = document.getElementById('admin-remove-member');
+  const removeSundaySel = document.getElementById('admin-remove-sunday');
+
+  // Preenche Membros
+  const memberOptions = state.members.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+  if (insertMemberSel) insertMemberSel.innerHTML = memberOptions;
+  if (removeMemberSel) {
+    removeMemberSel.innerHTML = '<option value="">Selecione o membro...</option>' + memberOptions;
+    removeMemberSel.addEventListener('change', () => {
+      // Atualiza os domingos removíveis baseado no membro selecionado
+      const mId = removeMemberSel.value;
+      if (!mId) {
+        removeSundaySel.innerHTML = '';
+        return;
+      }
+      const memberAtts = state.allAttendances.filter(a => a.member_id === mId);
+      removeSundaySel.innerHTML = memberAtts.map(a => `<option value="${a.sunday_date}">${a.sunday_date}</option>`).join('');
+    });
+  }
+
+  // Preenche Domingos passados (para inserção)
+  if (insertSundaySel) {
+    // Pegar domingos passados do mês atual + mês anterior para margem
+    const today = new Date();
+    const prevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    const prevSundays = getSundaysInMonth(prevMonth.getFullYear(), prevMonth.getMonth());
+    const allRecentSundays = [...prevSundays, ...state.pastSundays];
+    
+    // Filtra para mostrar do mais recente pro mais antigo
+    const sundayOptions = allRecentSundays.reverse().map(d => {
+      const dStr = toDateString(d);
+      return `<option value="${dStr}">${dStr}</option>`;
+    }).join('');
+    insertSundaySel.innerHTML = sundayOptions;
+  }
+
+  // Prepara status do mês atual
+  const statusContainer = document.getElementById('admin-month-status');
+  if (statusContainer) {
+    renderAdminMonthStatus(statusContainer, state.members, state.monthAttendances, state.allSundays.length);
+  }
+
+  // Botões
+  const btnInsert = document.getElementById('btn-admin-insert');
+  if (btnInsert) {
+    btnInsert.onclick = async () => {
+      const mId = insertMemberSel.value;
+      const sDate = insertSundaySel.value;
+      if (!mId || !sDate) return;
+      
+      const mKey = sDate.slice(0, 7);
+      const btn = btnInsert;
+      const oldText = btn.textContent;
+      btn.textContent = 'Aguarde...';
+      btn.disabled = true;
+
+      const { success, duplicate } = await registerAttendance(mId, sDate, mKey);
+      if (success) {
+        showToast('Presença registrada com sucesso.', 'success');
+        await reloadAttendances();
+        loadAdminPanel(); // recarrega UI
+      } else if (duplicate) {
+        showToast('Este membro já tem presença registrada neste domingo.', 'error');
+      } else {
+        showToast('Erro ao registrar presença.', 'error');
+      }
+      btn.textContent = oldText;
+      btn.disabled = false;
+    };
+  }
+
+  const btnRemove = document.getElementById('btn-admin-remove');
+  const divConfirm = document.getElementById('admin-remove-confirm');
+  const btnConfirmRemove = document.getElementById('btn-admin-confirm-remove');
+  const btnCancelRemove = document.getElementById('btn-admin-cancel-remove');
+
+  if (btnRemove) {
+    btnRemove.onclick = () => {
+      if (!removeMemberSel.value || !removeSundaySel.value) return;
+      btnRemove.classList.add('hidden');
+      divConfirm.classList.remove('hidden');
+    };
+  }
+  if (btnCancelRemove) {
+    btnCancelRemove.onclick = () => {
+      divConfirm.classList.add('hidden');
+      btnRemove.classList.remove('hidden');
+    };
+  }
+  if (btnConfirmRemove) {
+    btnConfirmRemove.onclick = async () => {
+      const mId = removeMemberSel.value;
+      const sDate = removeSundaySel.value;
+      if (!mId || !sDate) return;
+
+      const { success } = await removeAttendance(mId, sDate);
+      if (success) {
+        showToast('Presença removida.', 'success');
+        await reloadAttendances();
+        removeMemberSel.value = '';
+        removeSundaySel.innerHTML = '';
+        divConfirm.classList.add('hidden');
+        btnRemove.classList.remove('hidden');
+        loadAdminPanel();
+      } else {
+        showToast('Erro ao remover presença.', 'error');
+      }
+    };
   }
 }
 
@@ -269,6 +406,7 @@ function switchTab(tabName) {
   if (tabName === 'ranking')   loadRanking();
   if (tabName === 'confraria') loadConfraria();
   if (tabName === 'historico') loadHistory();
+  if (tabName === 'admin')     loadAdminPanel();
 }
 
 function bindNavEvents() {
@@ -335,6 +473,7 @@ function loadRanking() {
 // ─── CONFRARIA ────────────────────────────────────────────────
 
 function loadConfraria() {
+  // Todos os membros aparecem como orbs na confraria
   const orbsContainer = document.getElementById('orbs-container');
   if (orbsContainer) renderOrbs(orbsContainer, state.members, state.todayPresentIds);
 
@@ -386,18 +525,27 @@ function renderConfrariaCandlesRow(container) {
 function loadHistory() {
   const listEl = document.getElementById('history-list');
   if (!listEl) return;
-
-  const attendanceMap = {};
-  state.members.forEach(member => {
-    attendanceMap[member.id] = state.monthAttendances
-      .filter(a => a.member_id === member.id)
-      .map(a => a.sunday_date);
+  
+  // Agrupar todas as presenças por mês
+  const attendancesByMonth = {};
+  state.allAttendances.forEach(a => {
+    if (!attendancesByMonth[a.month_key]) attendancesByMonth[a.month_key] = [];
+    attendancesByMonth[a.month_key].push(a);
   });
+  
+  // Extrair chaves dos meses únicos e ordenar decrescente
+  const uniqueMonths = Object.keys(attendancesByMonth).sort((a, b) => b.localeCompare(a));
+  
+  // Se não tiver meses ainda, adiciona pelo menos o mês atual vazio
+  if (uniqueMonths.length === 0) {
+    uniqueMonths.push(state.currentMonthKey);
+  }
+  
+  // Ocultar placeholder de "em breve"
+  const futureEl = document.querySelector('.history-future');
+  if (futureEl) futureEl.classList.add('hidden');
 
-  const monthNameEl = document.getElementById('history-month');
-  if (monthNameEl) monthNameEl.textContent = getCurrentMonthName();
-
-  renderHistory(listEl, state.members, attendanceMap, state.allSundays.length);
+  renderHistory(listEl, state.members, uniqueMonths, attendancesByMonth);
 }
 
 // ─── HELPERS DE TELA ──────────────────────────────────────────

@@ -293,6 +293,56 @@
     </div><!-- /tab-historico -->
 
 
+    <!-- ── ABA: ADMIN (exclusiva) ──────────────────────── -->
+    <div id="tab-admin" class="tab-content tab--hidden" role="tabpanel" aria-label="Administração">
+      <div class="panel-header">
+        <h2 class="panel-title" style="color: var(--cream);">Painel de Controle</h2>
+        <div class="panel-month">Área Exclusiva</div>
+      </div>
+
+      <div class="admin-sections" style="padding: 0 20px 80px 20px; display: flex; flex-direction: column; gap: 32px; margin-top: 24px;">
+        <!-- Inserir Presença -->
+        <div class="admin-section">
+          <h3 style="color: var(--gold); font-size: 16px; margin-bottom: 4px;">Registrar Presença Manual</h3>
+          <p class="admin-subtitle" style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Para domingos em que o membro esqueceu de registrar.</p>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <select id="admin-insert-member" class="auth-input" style="width: 100%;"></select>
+          </div>
+          <div class="form-group" style="margin-bottom: 16px;">
+            <select id="admin-insert-sunday" class="auth-input" style="width: 100%;"></select>
+          </div>
+          <button id="btn-admin-insert" class="btn-primary" style="width: 100%;">Registrar presença</button>
+        </div>
+
+        <!-- Remover Presença -->
+        <div class="admin-section">
+          <h3 style="color: var(--gold); font-size: 16px; margin-bottom: 4px;">Remover Presença</h3>
+          <p class="admin-subtitle" style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Use apenas para corrigir registros incorretos.</p>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <select id="admin-remove-member" class="auth-input" style="width: 100%;"></select>
+          </div>
+          <div class="form-group" style="margin-bottom: 16px;">
+            <select id="admin-remove-sunday" class="auth-input" style="width: 100%;"></select>
+          </div>
+          <div id="admin-remove-confirm" class="hidden" style="margin-top: 16px; margin-bottom: 16px; padding: 12px; border: 1px solid var(--color-wine); border-radius: 8px;">
+            <p style="font-size: 13px; margin-bottom: 12px; color: var(--cream);">Tem certeza? Esta ação não pode ser desfeita.</p>
+            <div style="display: flex; gap: 8px;">
+              <button id="btn-admin-confirm-remove" class="btn-primary" style="flex: 1; padding: 8px;">Confirmar</button>
+              <button id="btn-admin-cancel-remove" class="btn-secondary" style="flex: 1; padding: 8px;">Cancelar</button>
+            </div>
+          </div>
+          <button id="btn-admin-remove" class="btn-secondary" style="width: 100%; border-color: #555; color: #ccc;">Remover presença</button>
+        </div>
+
+        <!-- Status do Mês -->
+        <div class="admin-section">
+          <h3 style="color: var(--gold); font-size: 16px; margin-bottom: 16px;">Status do Mês Atual</h3>
+          <div id="admin-month-status" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+      </div>
+    </div><!-- /tab-admin -->
+
+
     <!-- ── NAVEGAÇÃO INFERIOR (sempre visível no app) ──── -->
     <nav class="bottom-nav" role="navigation" aria-label="Navegação principal">
       <button class="nav-tab nav-tab--active" data-tab="inicio" aria-label="Início" id="nav-inicio">
@@ -310,6 +360,10 @@
       <button class="nav-tab" data-tab="historico" aria-label="Histórico" id="nav-historico">
         <span class="nav-tab__icon" aria-hidden="true">⛨</span>
         <span class="nav-tab__label">Histórico</span>
+      </button>
+      <button class="nav-tab hidden" data-tab="admin" aria-label="Admin" id="nav-admin">
+        <span class="nav-tab__icon" aria-hidden="true">⚙</span>
+        <span class="nav-tab__label">Admin</span>
       </button>
     </nav>
 
