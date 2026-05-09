@@ -136,7 +136,7 @@ export async function registerAttendance(memberId, massDate, monthKey, location 
   try {
     const { error } = await getClient()
       .from('attendances')
-      .insert({ member_id: memberId, mass_date: massDate, month_key: monthKey, location, mass_time });
+      .insert({ member_id: memberId, mass_date: massDate, month_key: monthKey, location, mass_time: massTime });
 
     if (error) {
       // Código 23505 = violação de constraint UNIQUE (duplicata)
