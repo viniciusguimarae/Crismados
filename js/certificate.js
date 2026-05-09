@@ -36,6 +36,7 @@ export function renderCertificate(container, member, eligibility) {
     container.innerHTML = `
       <div class="certificate-unlocked visible">
         <div class="certificate">
+          <div class="corner-crosses" aria-hidden="true"></div>
           <div class="certificate-content">
             <div class="certificate-seal">
               <span class="certificate-seal__symbol">✝</span>
@@ -97,7 +98,12 @@ export function renderCertificate(container, member, eligibility) {
           Complete pelo menos 4 missas no mês para desbloquear seu pergaminho.
         </p>
         <div class="certificate-locked__remaining">${msg}</div>
-        <div class="certificate-locked__preview"></div>
+        <div class="certificate-locked__preview" style="position: relative;">
+          <!-- Wax Seal -->
+          <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border-radius: 50%; background: #3d0d15; border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; z-index: 1;">
+            <span style="color: var(--gold); font-size: 18px;">✝</span>
+          </div>
+        </div>
       </div>
     `;
   }

@@ -43,6 +43,11 @@ export async function initAuth(onSuccess) {
 export function renderAuthScreen(container) {
   container.innerHTML = `
     <div class="auth-emblem" aria-hidden="true">✝</div>
+    <div class="rosary-arc" aria-hidden="true" style="width: 120px; height: 30px; margin: -10px auto 16px auto;">
+      <svg viewBox="0 0 100 50" preserveAspectRatio="none" style="width: 100%; height: 100%;">
+        <path d="M 0 0 Q 50 50 100 0" fill="none" stroke="rgba(201,168,76,0.15)" stroke-dasharray="2 4" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
 
     <h1 class="entry-title">Confraria<br>dos Crismados</h1>
     <p class="entry-subtitle">Acesse sua conta</p>
@@ -155,6 +160,10 @@ export function renderAuthScreen(container) {
         Criar minha conta
       </button>
     </form>
+
+    <div style="text-align: center; margin-top: 32px; font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 2px; color: var(--gold-dim); opacity: 0.6;" aria-hidden="true">
+      † In Nomine Domini †
+    </div>
   `;
 
   // Bind de eventos

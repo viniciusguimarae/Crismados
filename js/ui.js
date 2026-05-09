@@ -101,16 +101,26 @@ export function updatePanelHeader(member) {
   if (monthEl) monthEl.textContent = getCurrentMonthName();
 }
 
-/**
- * Atualiza os boxes de stats (missas e streak).
- * @param {number} count
- * @param {number} streak
- */
-export function updateStats(count, streak) {
+export function updateStats(memberId, members, monthAttendances) {
+  const counts = {};
+  members.forEach(m => counts[m.id] = 0);
+  monthAttendances.forEach(a => counts[a.member_id]++);
+
+  const sorted = [...members].sort((a, b) => {
+    const countA = counts[a.id];
+    const countB = counts[b.id];
+    if (countB !== countA) return countB - countA;
+    return a.name.localeCompare(b.name);
+  });
+
+  const index = sorted.findIndex(m => m.id === memberId);
+  const rankNumeral = index >= 0 ? toRomanNumeral(index + 1) : '-';
+
   const countEl = document.getElementById('stat-count');
-  const streakEl = document.getElementById('stat-streak');
-  if (countEl) countEl.textContent = count;
-  if (streakEl) streakEl.textContent = streak;
+  const rankEl = document.getElementById('stat-rank');
+  
+  if (countEl) countEl.textContent = counts[memberId] || 0;
+  if (rankEl) rankEl.textContent = rankNumeral;
 }
 
 /**
@@ -173,9 +183,11 @@ export function renderRanking(listEl, members, attendanceMap, totalPossible) {
     return a.name.localeCompare(b.name);
   });
 
+  const maxCount = sorted.length > 0 ? (attendanceMap[sorted[0].id] || []).length : 0;
+
   sorted.forEach((member, index) => {
     const count = (attendanceMap[member.id] || []).length;
-    const possible = totalPossible || 1;
+    const possible = maxCount || 1;
     const pct = Math.round((count / possible) * 100);
     const isFirst = index === 0 && count > 0;
     const initials = member.initials || getInitials(member.name);
@@ -189,7 +201,7 @@ export function renderRanking(listEl, members, attendanceMap, totalPossible) {
       <div class="avatar avatar--sm">${initials}</div>
       <div class="ranking-row__info">
         <div class="ranking-row__name">${member.name}</div>
-        <div class="ranking-row__count">${count} missas registradas</div>
+        <div class="ranking-row__count">${count} ${count === 1 ? 'missa registrada' : 'missas registradas'}</div>
         <div class="ranking-row__progress-track">
           <div class="ranking-row__progress-fill" data-pct="${pct}"></div>
         </div>
@@ -345,18 +357,28 @@ export function renderHistory(container, allAttendances, members) {
     const maxCount = sortedMembers.length ? counts[sortedMembers[0]] : 0;
 
     sortedMembers.forEach((mId, index) => {
-      const name = memberMap[mId]?.name || 'Membro';
+      const member = memberMap[mId];
+      if (!member) return;
+      
       const c = counts[mId];
+      const initials = member.initials || getInitials(member.name);
+      
       // Exibe uma coroa se for o maior
       const badge = (c === maxCount && c > 0) ? '<span title="Maior presença" style="color:var(--gold); margin-left:6px;">♔</span>' : '';
+      const certBadge = (c >= 4) ? '<span title="Pergaminho conquistado" style="color:var(--gold); margin-left:4px;">✦</span>' : '';
       
-      const item = document.createElement('div');
-      item.className = 'history-item animate-cardEntrance animate-delay-' + (index % 5 + 1);
-      item.innerHTML = `
-        <span class="history-item__name">${name} ${badge}</span>
-        <span class="history-item__count">${c} missas</span>
+      const row = document.createElement('div');
+      row.className = 'ranking-row animate-cardEntrance animate-delay-' + (index % 5 + 1);
+      
+      // Não temos o numérico romano aqui, fica mais limpo sem.
+      row.innerHTML = `
+        <div class="avatar avatar--sm" style="margin-left: 8px;">${initials}</div>
+        <div class="ranking-row__info">
+          <div class="ranking-row__name">${member.name} ${badge} ${certBadge}</div>
+          <div class="ranking-row__count" style="color: var(--gold);">${c} ${c === 1 ? 'missa' : 'missas'}</div>
+        </div>
       `;
-      monthEl.appendChild(item);
+      monthEl.appendChild(row);
     });
 
     container.appendChild(monthEl);

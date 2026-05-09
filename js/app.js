@@ -136,7 +136,7 @@ function loadMemberPanel() {
 
   state.memberAttendances = state.monthAttendances.filter(a => a.member_id === member.id);
 
-  updateStats(state.memberAttendances.length, '-');
+  updateStats(member.id, state.members, state.monthAttendances);
 
   const candlesContainer = document.getElementById('candles-container');
   if (candlesContainer) {
@@ -169,6 +169,8 @@ function setupModal() {
   const modal = document.getElementById('modal-register');
   const form = document.getElementById('form-register-mass');
   const btnCancel = document.getElementById('btn-cancel-mass');
+  const dateInput = document.getElementById('input-mass-date');
+  const dateDisplay = document.getElementById('date-display-text');
 
   if (btnCancel) {
     btnCancel.addEventListener('click', () => modal.classList.add('hidden'));
@@ -180,13 +182,19 @@ function setupModal() {
       await handleSaveMass();
     });
   }
+
+  if (dateInput && dateDisplay) {
+    dateInput.addEventListener('change', () => {
+      dateDisplay.textContent = formatLongDate(dateInput.value);
+    });
+  }
 }
 
 function openRegisterModal() {
   const modal = document.getElementById('modal-register');
   const form = document.getElementById('form-register-mass');
-  const chipsContainer = document.getElementById('chips-date-container');
   const dateInput = document.getElementById('input-mass-date');
+  const dateDisplay = document.getElementById('date-display-text');
   const title = document.getElementById('modal-title');
   const errorMsg = document.getElementById('error-mass-date');
   
@@ -201,32 +209,14 @@ function openRegisterModal() {
     btnSave.disabled = false;
   }
   
-  // Create chips for last 4 days
-  chipsContainer.innerHTML = '';
   const pastDays = getPastDays(3);
-  let selectedDateStr = toDateString(pastDays[0]); // Default to today
-  dateInput.value = selectedDateStr;
-  
-  pastDays.forEach((date, i) => {
-    const dStr = toDateString(date);
-    const isToday = i === 0;
-    const label = isToday ? 'Hoje' : (i === 1 ? 'Ontem' : formatShortDate(dStr));
-    
-    const chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = `chip ${isToday ? 'chip--active' : ''}`;
-    chip.textContent = label;
-    chip.dataset.date = dStr;
-    
-    chip.addEventListener('click', () => {
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('chip--active'));
-      chip.classList.add('chip--active');
-      dateInput.value = dStr;
-      errorMsg.classList.add('hidden');
-    });
-    
-    chipsContainer.appendChild(chip);
-  });
+  const todayStr = toDateString(pastDays[0]);
+  const minDateStr = toDateString(pastDays[3]);
+
+  dateInput.min = minDateStr;
+  dateInput.max = todayStr;
+  dateInput.value = todayStr;
+  if (dateDisplay) dateDisplay.textContent = formatLongDate(todayStr);
   
   modal.classList.remove('hidden');
 }
@@ -234,8 +224,8 @@ function openRegisterModal() {
 function openEditModal(attendance) {
   const modal = document.getElementById('modal-register');
   const form = document.getElementById('form-register-mass');
-  const chipsContainer = document.getElementById('chips-date-container');
   const dateInput = document.getElementById('input-mass-date');
+  const dateDisplay = document.getElementById('date-display-text');
   const title = document.getElementById('modal-title');
   const errorMsg = document.getElementById('error-mass-date');
   
@@ -250,18 +240,16 @@ function openEditModal(attendance) {
     btnSave.disabled = false;
   }
   
+  const pastDays = getPastDays(3);
+  dateInput.min = toDateString(pastDays[3]);
+  dateInput.max = toDateString(pastDays[0]);
+
   const dStr = attendance.mass_date || attendance.sunday_date;
   dateInput.value = dStr;
+  if (dateDisplay) dateDisplay.textContent = formatLongDate(dStr);
   
   document.getElementById('input-mass-location').value = attendance.location || '';
   document.getElementById('input-mass-time').value = attendance.mass_time || '';
-  
-  chipsContainer.innerHTML = '';
-  const chip = document.createElement('button');
-  chip.type = 'button';
-  chip.className = 'chip chip--active';
-  chip.textContent = formatShortDate(dStr);
-  chipsContainer.appendChild(chip);
   
   modal.classList.remove('hidden');
 }

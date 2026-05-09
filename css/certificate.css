@@ -288,3 +288,8 @@
 .gallery-item__status--locked {
   color: var(--cream-dim);
 }
+
+.corner-crosses { position: absolute; inset: 6px; pointer-events: none; z-index: 0; }
+.corner-crosses::before, .corner-crosses::after { content: ''; position: absolute; width: 100%; height: 100%; }
+.corner-crosses::before { background: radial-gradient(circle at 10px 10px, rgba(139,100,40,0.8) 1.5px, transparent 2px), radial-gradient(circle at calc(100% - 10px) 10px, rgba(139,100,40,0.8) 1.5px, transparent 2px), radial-gradient(circle at 10px calc(100% - 10px), rgba(139,100,40,0.8) 1.5px, transparent 2px), radial-gradient(circle at calc(100% - 10px) calc(100% - 10px), rgba(139,100,40,0.8) 1.5px, transparent 2px); }
+.corner-crosses::after { background: linear-gradient(90deg, transparent 9px, rgba(139,100,40,0.4) 9px, rgba(139,100,40,0.4) 11px, transparent 11px), linear-gradient(0deg, transparent 9px, rgba(139,100,40,0.4) 9px, rgba(139,100,40,0.4) 11px, transparent 11px); background-size: 20px 20px; background-position: 0 0, 100% 0, 0 100%, 100% 100%; background-repeat: no-repeat; opacity: 0.8; }

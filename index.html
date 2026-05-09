@@ -144,16 +144,21 @@
       </div>
 
       <!-- Card de quote espiritual -->
-      <div class="quote-card" aria-label="Versículo do dia">
-        <p id="panel-quote-text" class="quote-card__text">"Posso tudo naquele que me fortalece."</p>
-        <cite id="panel-quote-ref" class="quote-card__ref">— Filipenses 4,13</cite>
+      <div class="quote-card" aria-label="Versículo do dia" style="position: relative;">
+        <span style="position: absolute; left: 16px; top: 20px; font-size: 16px; color: var(--gold); opacity: 0.8;" aria-hidden="true">⚜</span>
+        <p id="panel-quote-text" class="quote-card__text" style="padding-left: 20px;">"Posso tudo naquele que me fortalece."</p>
+        <cite id="panel-quote-ref" class="quote-card__ref" style="padding-left: 20px;">— Filipenses 4,13</cite>
       </div>
 
       <!-- Stats -->
-      <div class="stats-row" aria-label="Estatísticas do mês" style="justify-content: center;">
-        <div class="stat-box">
+      <div class="stats-row" aria-label="Estatísticas do mês" style="justify-content: center; gap: 16px;">
+        <div class="stat-box" style="flex: 1;">
           <div id="stat-count" class="stat-box__value">0</div>
           <div class="stat-box__label">Missas este mês</div>
+        </div>
+        <div class="stat-box" style="flex: 1;">
+          <div id="stat-rank" class="stat-box__value">-</div>
+          <div class="stat-box__label">Posição no ranking</div>
         </div>
       </div>
 
@@ -163,9 +168,17 @@
         <div id="candles-container" class="candles-row" aria-label="Velas das missas" style="flex-wrap: wrap; justify-content: center;"></div>
       </div>
 
-      <!-- Divisor -->
-      <div class="ornamental-divider page-padding" aria-hidden="true">
-        <span class="ornamental-divider__symbol">✦</span>
+      <!-- Divisor (Rosary beads motif) -->
+      <div class="ornamental-divider page-padding" aria-hidden="true" style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+        <div style="flex: 1; height: 1px; background: rgba(201,168,76,0.2);"></div>
+        <svg width="40" height="10" viewBox="0 0 40 10">
+          <circle cx="5" cy="5" r="1.5" fill="var(--gold-dim)" />
+          <circle cx="12.5" cy="5" r="1.5" fill="var(--gold-dim)" />
+          <circle cx="20" cy="5" r="2.5" fill="var(--gold)" />
+          <circle cx="27.5" cy="5" r="1.5" fill="var(--gold-dim)" />
+          <circle cx="35" cy="5" r="1.5" fill="var(--gold-dim)" />
+        </svg>
+        <div style="flex: 1; height: 1px; background: rgba(201,168,76,0.2);"></div>
       </div>
 
       <!-- Botão principal de registro -->
@@ -205,9 +218,15 @@
     <!-- ── ABA: CONFRARIA (progresso coletivo) ─────────── -->
     <div id="tab-confraria" class="tab-content tab--hidden" role="tabpanel" aria-label="Confraria">
 
-      <div class="confraria-header">
-        <h2 class="ranking-title" style="color: var(--cream);">A Confraria</h2>
-        <div class="ranking-month">Progresso coletivo de Maio</div>
+      <div class="confraria-header" style="position: relative; overflow: hidden;">
+        <!-- Watermark Crown -->
+        <svg class="watermark-crown" viewBox="0 0 100 100" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; opacity: 0.04; pointer-events: none;" aria-hidden="true">
+          <path d="M50 10 L50 90 M10 50 L90 50" stroke="var(--gold)" stroke-width="4" />
+          <circle cx="50" cy="50" r="30" fill="none" stroke="var(--gold)" stroke-width="2" stroke-dasharray="4 4" />
+        </svg>
+        
+        <h2 class="ranking-title" style="color: var(--cream); position: relative; z-index: 1;">A Confraria</h2>
+        <div class="ranking-month" style="position: relative; z-index: 1;">Progresso coletivo de Maio</div>
       </div>
 
       <!-- Painel "Este Domingo" -->
@@ -390,10 +409,10 @@
         
         <div class="form-group">
           <label class="form-label" for="input-mass-date">Data da missa</label>
-          <div id="chips-date-container" class="chips-row">
-            <!-- Chips injetados pelo JS -->
+          <div class="date-input-wrapper">
+            <div id="date-display-text" class="form-input" style="cursor: pointer; color: var(--cream);"></div>
+            <input type="date" id="input-mass-date" class="date-input-hidden" required />
           </div>
-          <input type="date" id="input-mass-date" class="form-input hidden" required />
           <div id="error-mass-date" class="form-error hidden">Você já registrou uma missa neste dia.</div>
         </div>
 
