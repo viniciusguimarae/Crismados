@@ -296,7 +296,7 @@ async function handleSaveMass() {
     modal.classList.add('hidden');
     showToast(`Missa salva, ${member.name.split(' ')[0]}!`, 'success');
   } else {
-    showToast('Ocorreu um erro ao salvar.', 'error');
+    showToast('Erro ao salvar: ' + (res.error?.message || res.error || 'Erro desconhecido'), 'error');
   }
 
   btnSave.textContent = oldText;
