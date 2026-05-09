@@ -296,19 +296,19 @@ export function renderHistory(listEl, members, uniqueMonths, attendancesByMonth)
           const isTop = count === maxCount && count > 0;
           const initials = member.initials || member.name.slice(0, 2).toUpperCase();
           
-          return \`
+          return `
             <div class="ranking-row" style="padding: 12px 16px;">
-              <div class="avatar avatar--sm">\${initials}</div>
+              <div class="avatar avatar--sm">${initials}</div>
               <div class="ranking-row__info" style="flex: 1; display: flex; justify-content: space-between; align-items: center;">
                 <div class="ranking-row__name" style="margin-bottom: 0;">
-                  \${member.name}
-                  \${isTop ? '<span title="Mais presenças no mês" style="color: var(--gold); margin-left: 4px; font-size: 14px;">♔</span>' : ''}
-                  \${is100Percent ? '<span title="Completou o mês" style="color: var(--gold); margin-left: 4px; font-size: 14px;">✦</span>' : ''}
+                  ${member.name}
+                  ${isTop ? '<span title="Mais presenças no mês" style="color: var(--gold); margin-left: 4px; font-size: 14px;">♔</span>' : ''}
+                  ${is100Percent ? '<span title="Completou o mês" style="color: var(--gold); margin-left: 4px; font-size: 14px;">✦</span>' : ''}
                 </div>
-                <div class="ranking-row__count" style="margin-top: 0; font-size: 14px;">\${count}/\${totalPossible}</div>
+                <div class="ranking-row__count" style="margin-top: 0; font-size: 14px;">${count}/${totalPossible}</div>
               </div>
             </div>
-          \`;
+          `;
         }).join('')}
       </div>
     `;
@@ -328,13 +328,13 @@ export function renderAdminMonthStatus(container, members, monthAttendances, tot
   });
 
   container.innerHTML = members.map(m => {
-    return \`
+    return `
       <div class="ranking-row" style="padding: 8px 12px; min-height: unset;">
         <div class="ranking-row__info" style="flex: 1; display: flex; justify-content: space-between; flex-direction: row; align-items: center;">
-          <span style="color: var(--cream); font-size: 13px;">\${m.name}</span>
-          <span style="color: var(--gold); font-size: 13px;">\${map[m.id] || 0}/\${totalPossible} domingos</span>
+          <span style="color: var(--cream); font-size: 13px;">${m.name}</span>
+          <span style="color: var(--gold); font-size: 13px;">${map[m.id] || 0}/${totalPossible} domingos</span>
         </div>
       </div>
-    \`;
+    `;
   }).join('');
 }
