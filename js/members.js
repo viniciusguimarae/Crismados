@@ -12,85 +12,37 @@
  * Após rodar o SQL de setup, atualize os IDs abaixo com os
  * UUIDs reais da tabela `members`.
  */
-export const MEMBERS_LOCAL = [
-  {
-    id: null,           // Preencher com UUID real após setup do Supabase
-    name: 'Vinicius',
-    initials: 'VI',
-  },
-  {
-    id: null,
-    name: 'Letícia',
-    initials: 'LE',
-  },
-  {
-    id: null,
-    name: 'Tailana',
-    initials: 'TA',
-  },
-  {
-    id: null,
-    name: 'Alice',
-    initials: 'AL',
-  },
-  {
-    id: null,
-    name: 'Rodrigo',
-    initials: 'RO',
-  },
-  {
-    id: null,
-    name: 'Matheus',
-    initials: 'MA',
-  },
-];
-
-/**
- * Retorna o membro local pelo nome (case-insensitive).
- * @param {string} name
- * @returns {object|undefined}
- */
-export function getMemberByName(name) {
-  return MEMBERS_LOCAL.find(
-    m => m.name.toLowerCase() === name.toLowerCase()
-  );
-}
-
-/**
- * Retorna o membro local pelo ID.
- * @param {string} id
- * @returns {object|undefined}
- */
-export function getMemberById(id) {
-  return MEMBERS_LOCAL.find(m => m.id === id);
-}
-
 /**
  * Retorna as iniciais de um nome.
- * Usa os dois primeiros caracteres do nome.
+ * Usa os dois primeiros caracteres do nome, ou as duas primeiras letras.
  * @param {string} name
  * @returns {string}
  */
 export function getInitials(name) {
   if (!name) return '??';
+  
+  // Se o nome tiver mais de uma palavra (ex: Joao Paulo), pega as iniciais
+  const parts = name.trim().split(' ');
+  if (parts.length > 1) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  
   return name.slice(0, 2).toUpperCase();
 }
 
 /**
- * Mescla dados vindos do Supabase com os dados locais.
- * Atualiza os IDs dos membros locais com base no nome.
+ * Processa os dados vindos do Supabase.
+ * Como o banco é a única fonte da verdade, apenas adicionamos as iniciais.
  * @param {Array} supabaseMembers - Array de { id, name } do Supabase
- * @returns {Array} membros locais com IDs preenchidos
+ * @returns {Array} array de membros formatado
  */
 export function mergeWithSupabase(supabaseMembers) {
-  return MEMBERS_LOCAL.map(localMember => {
-    const remote = supabaseMembers.find(
-      sm => sm.name.toLowerCase() === localMember.name.toLowerCase()
-    );
-    return remote
-      ? { ...localMember, id: remote.id }
-      : localMember;
-  });
+  if (!supabaseMembers) return [];
+  
+  return supabaseMembers.map(member => ({
+    ...member,
+    initials: getInitials(member.name)
+  }));
 }
 
 // ─── Quotes espirituais rotativas ─────────────────────────────
