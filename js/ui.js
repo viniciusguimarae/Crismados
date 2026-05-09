@@ -214,6 +214,10 @@ export function renderOrbs(orbsContainer, members, todayPresentIds) {
       <span class="orb__name">${member.name.split(' ')[0]}</span>
     `;
     orbsContainer.appendChild(wrapper);
+  });
+}
+
+/**
  * Atualiza o painel da Confraria (Progresso coletivo e Orbs).
  * @param {Array} members 
  * @param {Array} allAttendances - de todos do mês
