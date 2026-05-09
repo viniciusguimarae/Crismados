@@ -261,10 +261,10 @@ async function handleRegister(container) {
   const { user, member, error, errorType } = await signUp(email, senha, nome);
 
   if (error) {
-    if (errorType === 'name_not_found') {
-      showToast('Este nome não pertence à Confraria. Verifique com o administrador.', 'error', 5000);
-    } else if (errorType === 'email_taken') {
+    if (errorType === 'email_taken') {
       showToast('Este e-mail já está cadastrado. Tente entrar.', 'error');
+    } else if (errorType === 'insert_failed') {
+      showToast('Erro ao salvar perfil. Tente novamente.', 'error');
     } else {
       showToast('Erro ao criar conta. Tente novamente.', 'error');
       console.error('[Auth] signUp error:', error);

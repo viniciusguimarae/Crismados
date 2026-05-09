@@ -195,8 +195,7 @@ export async function signIn(email, password) {
 
 /**
  * Cadastro de novo usuário.
- * Valida se o nome existe na tabela members (case-insensitive).
- * Após cadastro bem-sucedido, vincula auth_user_id ao membro.
+ * Cria a conta no Auth e em seguida insere o membro na tabela members.
  * @param {string} email
  * @param {string} password
  * @param {string} name
@@ -206,22 +205,7 @@ export async function signUp(email, password, name) {
   try {
     const client = getClient();
 
-    // 1. Verifica se o nome existe na tabela members (sem auth_user_id ainda)
-    const { data: existingMembers, error: membersError } = await client
-      .from('members')
-      .select('id, name, auth_user_id')
-      .ilike('name', name.trim());
-
-    if (membersError) throw membersError;
-
-    if (!existingMembers || existingMembers.length === 0) {
-      return { user: null, member: null, error: new Error('name_not_found'), errorType: 'name_not_found' };
-    }
-
-    // Usa o primeiro match (nome na Confraria)
-    const matchedMember = existingMembers[0];
-
-    // 2. Cria conta no Supabase Auth
+    // 1. Cria conta no Supabase Auth
     const { data: authData, error: authError } = await client.auth.signUp({ email, password });
 
     if (authError) {
@@ -239,23 +223,24 @@ export async function signUp(email, password, name) {
       return { user: null, member: null, error: new Error('No user returned'), errorType: 'unknown' };
     }
 
-    // 3. Vincula auth_user_id ao membro correspondente
-    const { error: updateError } = await client
+    // 2. Cria o membro dinamicamente na tabela
+    const { data: newMember, error: insertError } = await client
       .from('members')
-      .update({ auth_user_id: user.id })
-      .eq('id', matchedMember.id);
+      .insert({ name: name.trim(), auth_user_id: user.id })
+      .select()
+      .single();
 
-    if (updateError) {
-      console.error('[Supabase] signUp: falha ao vincular auth_user_id:', updateError);
-      // Não bloqueia — o usuário pode tentar logar e o admin vincula manualmente
+    if (insertError) {
+      console.error('[Supabase] signUp: falha ao criar membro:', insertError);
+      return { user: null, member: null, error: insertError, errorType: 'insert_failed' };
     }
 
-    // 4. Faz login automático (Supabase já retorna sessão em signUp)
+    // 3. Faz login automático
     const session = authData.session;
 
     return {
       user,
-      member: { ...matchedMember, auth_user_id: user.id },
+      member: newMember,
       session,
       error: null,
       errorType: null,
