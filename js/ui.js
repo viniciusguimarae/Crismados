@@ -343,6 +343,9 @@ export function renderHistory(container, allAttendances, members) {
 
     const monthEl = document.createElement('div');
     monthEl.className = 'history-month-group';
+    monthEl.style.display = 'flex';
+    monthEl.style.flexDirection = 'column';
+    monthEl.style.gap = '8px';
     monthEl.innerHTML = `<h3 class="history-month-title">${monthTitle}</h3>`;
     
     // Calcula contagem no mês

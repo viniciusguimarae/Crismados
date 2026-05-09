@@ -184,8 +184,21 @@ function setupModal() {
   }
 
   if (dateInput && dateDisplay) {
+    const dateWrapper = document.querySelector('.date-input-wrapper');
+    if (dateWrapper) {
+      dateWrapper.addEventListener('click', () => {
+        try {
+          if (typeof dateInput.showPicker === 'function') {
+            dateInput.showPicker();
+          }
+        } catch (e) {}
+      });
+    }
+
     dateInput.addEventListener('change', () => {
-      dateDisplay.textContent = formatLongDate(dateInput.value);
+      if (dateInput.value) {
+        dateDisplay.textContent = formatLongDate(dateInput.value);
+      }
     });
   }
 }
@@ -209,9 +222,12 @@ function openRegisterModal() {
     btnSave.disabled = false;
   }
   
-  const pastDays = getPastDays(3);
+  const pastDays = getPastDays(15);
   const todayStr = toDateString(pastDays[0]);
-  const minDateStr = toDateString(pastDays[3]);
+  const currentMonthStr = todayStr.slice(0, 7); // YYYY-MM
+  
+  const validDates = pastDays.filter(d => toDateString(d).startsWith(currentMonthStr));
+  const minDateStr = toDateString(validDates[validDates.length - 1]);
 
   dateInput.min = minDateStr;
   dateInput.max = todayStr;
@@ -240,9 +256,13 @@ function openEditModal(attendance) {
     btnSave.disabled = false;
   }
   
-  const pastDays = getPastDays(3);
-  dateInput.min = toDateString(pastDays[3]);
-  dateInput.max = toDateString(pastDays[0]);
+  const pastDays = getPastDays(15);
+  const todayStr = toDateString(pastDays[0]);
+  const currentMonthStr = todayStr.slice(0, 7);
+  
+  const validDates = pastDays.filter(d => toDateString(d).startsWith(currentMonthStr));
+  dateInput.min = toDateString(validDates[validDates.length - 1]);
+  dateInput.max = todayStr;
 
   const dStr = attendance.mass_date || attendance.sunday_date;
   dateInput.value = dStr;
