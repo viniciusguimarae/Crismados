@@ -4,9 +4,8 @@
 // ============================================================
 
 import {
-  toDateString, getSundayOrdinalLabel, getCandleHeightClass,
-  getCurrentMonthName, toRomanNumeral, getPastSundaysInCurrentMonth,
-  getCurrentSundayDateString, isSunday, formatMonthName, getSundaysInMonth
+  toDateString, getCandleHeightClass, formatLongDate, formatShortDate,
+  getCurrentMonthName, formatMonthName, getToday
 } from './dates.js';
 import { getInitials } from './members.js';
 import { animateProgressBar } from './animations.js';
@@ -16,31 +15,22 @@ import { animateProgressBar } from './animations.js';
 /**
  * Renderiza a fileira de velas no container fornecido.
  * @param {HTMLElement} container
- * @param {Date[]} sundays - todos os domingos do mês
- * @param {string[]} attendedDates - datas frequentadas pelo membro
- * @param {string} currentSundayStr - data do domingo atual 'YYYY-MM-DD'
+ * @param {Array} attendances - missas registradas pelo membro
  */
-export function renderCandles(container, sundays, attendedDates, currentSundayStr) {
+export function renderCandles(container, attendances) {
   container.innerHTML = '';
-  const total = sundays.length;
+  const total = attendances.length;
 
-  sundays.forEach((sunday, index) => {
-    const dateStr = toDateString(sunday);
-    const isLit = attendedDates.includes(dateStr);
-    const isCurrent = dateStr === currentSundayStr;
-    const heightClass = getCandleHeightClass(index, total);
-    const ordinalLabel = getSundayOrdinalLabel(index);
-    const dayNum = String(sunday.getDate()).padStart(2, '0');
-
-    const stateClass = isLit ? 'candle--lit' : 'candle--unlit';
-    const currentClass = (!isLit && isCurrent) ? 'candle--current current-sunday-pulse' : '';
+  attendances.forEach((att, index) => {
+    const dateStr = att.mass_date || att.sunday_date;
+    const heightClass = getCandleHeightClass(index);
+    const shortDate = formatShortDate(dateStr);
 
     const wrapper = document.createElement('div');
     wrapper.className = 'candle-wrapper';
     wrapper.dataset.date = dateStr;
     wrapper.innerHTML = `
-      <div class="candle-wrapper__ordinal">${ordinalLabel}</div>
-      <div class="candle ${stateClass} ${currentClass} candle--${heightClass}" data-date="${dateStr}">
+      <div class="candle candle--lit candle--${heightClass}" data-date="${dateStr}">
         <div class="candle__glow"></div>
         <div class="candle__flame-wrapper">
           <div class="candle__flame"></div>
@@ -49,8 +39,11 @@ export function renderCandles(container, sundays, attendedDates, currentSundaySt
         <div class="candle__body"></div>
         <div class="candle__base"></div>
       </div>
-      <div class="candle-wrapper__date">${dayNum}</div>
+      <div class="candle-wrapper__date" style="font-size:10px; color:var(--cream-dim); margin-top:4px;">${shortDate}</div>
     `;
+    if (att.location || att.mass_time) {
+       wrapper.title = `${att.location || 'Local não informado'} - ${att.mass_time || 'Horário não informado'}`;
+    }
     container.appendChild(wrapper);
   });
 }
@@ -82,7 +75,6 @@ export function renderMemberCards(grid, members, statsMap, onSelect) {
       <div class="avatar">${initials}</div>
       <div class="member-card__name">${member.name}</div>
       <div class="member-card__stat">${stats.count} ${stats.count === 1 ? 'missa' : 'missas'} este mês</div>
-      <div class="member-card__streak">${stats.streak > 0 ? `${stats.streak} dom. seguidos` : 'Nenhum seguido ainda'}</div>
     `;
 
     card.addEventListener('click', () => onSelect(member));
@@ -133,18 +125,17 @@ export function updateRegisterButton(state) {
   btn.disabled = false;
 
   if (state === 'active') {
-    btn.innerHTML = `<span class="btn-register__icon">✝</span> Registrar presença deste domingo`;
-    btn.setAttribute('aria-label', 'Registrar presença deste domingo');
+    btn.innerHTML = `<span class="btn-register__icon">✝</span> Registrar uma missa`;
+    btn.setAttribute('aria-label', 'Registrar uma missa');
   } else if (state === 'done') {
-    btn.innerHTML = `<span class="btn-register__icon">✦</span> Presença já registrada · Deo Gratias`;
+    btn.innerHTML = `<span class="btn-register__icon">✦</span> Missa de hoje já registrada`;
     btn.classList.add('btn-register--done');
     btn.disabled = true;
-    btn.setAttribute('aria-label', 'Presença já registrada');
+    btn.setAttribute('aria-label', 'Missa de hoje já registrada');
   } else {
-    btn.innerHTML = `<span class="btn-register__icon">☩</span> O registro abre no próximo domingo`;
+    btn.innerHTML = `<span class="btn-register__icon">✝</span> Registrar uma missa`;
     btn.classList.add('btn-register--disabled');
     btn.disabled = true;
-    btn.setAttribute('aria-label', 'Registro indisponível — aguarde o domingo');
   }
 }
 
@@ -223,104 +214,139 @@ export function renderOrbs(orbsContainer, members, todayPresentIds) {
       <span class="orb__name">${member.name.split(' ')[0]}</span>
     `;
     orbsContainer.appendChild(wrapper);
-  });
-}
-
-/**
- * Atualiza a barra e stats de fidelidade coletiva.
- * @param {number} totalAttended - total de presenças registradas no mês
- * @param {number} totalPossible - total possível (membros × domingos passados)
+ * Atualiza o painel da Confraria (Progresso coletivo e Orbs).
+ * @param {Array} members 
+ * @param {Array} allAttendances - de todos do mês
  */
-export function updateFidelityBar(totalAttended, totalPossible) {
-  const pct = totalPossible > 0 ? Math.round((totalAttended / totalPossible) * 100) : 0;
+export function renderConfrariaStatus(members, allAttendances) {
+  const container = document.getElementById('orbs-container');
+  const candlesContainer = document.getElementById('confraria-candles');
+  const fidelityPercentageEl = document.getElementById('fidelity-percentage');
+  const fidelityBarEl = document.getElementById('fidelity-bar');
+  const fidelityStatsEl = document.getElementById('fidelity-stats');
+  const todayMessageEl = document.getElementById('today-message');
+  const gloryMessageEl = document.getElementById('glory-message');
 
-  const pctEl = document.getElementById('fidelity-percentage');
-  const statEl = document.getElementById('fidelity-stats');
-  const barEl = document.getElementById('fidelity-bar');
+  const todayStr = toDateString(getToday());
+  const todayAtts = allAttendances.filter(a => a.mass_date === todayStr || a.sunday_date === todayStr);
 
-  if (pctEl) pctEl.textContent = `${pct}%`;
-  if (statEl) statEl.textContent = `${totalAttended} de ${totalPossible} presenças possíveis`;
-  if (barEl) animateProgressBar(barEl, pct);
+  // Presentes hoje
+  const presentMemberIds = todayAtts.map(a => a.member_id);
+  const totalMembers = members.length;
+  const presentCount = presentMemberIds.length;
+
+  if (todayMessageEl) {
+    todayMessageEl.textContent = `A Confraria tem ${presentCount} ${presentCount === 1 ? 'missa registrada' : 'missas registradas'} hoje.`;
+  }
+
+  // Glory message (Todos presentes hoje)
+  if (gloryMessageEl) {
+    const isGlory = presentCount === totalMembers && totalMembers > 0;
+    gloryMessageEl.style.display = isGlory ? 'block' : 'none';
+  }
+
+  // Orbs e Velinhas de Hoje
+  if (container) container.innerHTML = '';
+  if (candlesContainer) candlesContainer.innerHTML = '';
+
+  members.forEach((member, i) => {
+    const initials = member.initials || getInitials(member.name);
+    const isPresent = presentMemberIds.includes(member.id);
+    const stateClass = isPresent ? 'orb--lit' : 'orb--unlit';
+    const delayClass = `animate-delay-${i + 1}`;
+
+    if (container) {
+      container.innerHTML += `<div class="orb ${stateClass} ${delayClass}" title="${member.name}">${initials}</div>`;
+    }
+    if (candlesContainer) {
+      const candleState = isPresent ? 'candle--lit' : 'candle--unlit';
+      candlesContainer.innerHTML += `
+        <div class="candle-wrapper ${delayClass}" style="transform: scale(0.65); transform-origin: bottom center;">
+          <div class="candle ${candleState} candle--sm">
+            <div class="candle__glow"></div>
+            <div class="candle__flame-wrapper"><div class="candle__flame"></div></div>
+            <div class="candle__wick"></div>
+            <div class="candle__body"></div>
+            <div class="candle__base"></div>
+          </div>
+          <div class="candle-wrapper__ordinal" style="margin-top: 4px;">${initials}</div>
+        </div>
+      `;
+    }
+  });
+
+  // Fidelidade (Total de Missas)
+  const totalMasses = allAttendances.length;
+  
+  if (fidelityPercentageEl) fidelityPercentageEl.textContent = `${totalMasses}`;
+  if (fidelityStatsEl) fidelityStatsEl.textContent = `${totalMasses} missas registradas`;
+  if (fidelityBarEl) {
+    const fill = Math.min((totalMasses / 24) * 100, 100);
+    fidelityBarEl.style.width = `${fill}%`;
+  }
 }
 
 // ─── HISTÓRICO ────────────────────────────────────────────────
 
-/**
- * Renderiza a lista de histórico agrupada por meses.
- * @param {HTMLElement} listEl
- * @param {Array} members
- * @param {string[]} uniqueMonths - ex: ['2026-05', '2026-04']
- * @param {object} attendancesByMonth - dicionário de arrays de presenças
- */
-export function renderHistory(listEl, members, uniqueMonths, attendancesByMonth) {
-  listEl.innerHTML = '';
+export function renderHistory(container, allAttendances, members) {
+  container.innerHTML = '';
+  if (!allAttendances.length) {
+    container.innerHTML = '<p class="history-item text-cream-dim" style="text-align:center;">Nenhum registro encontrado.</p>';
+    return;
+  }
 
-  uniqueMonths.forEach(monthKey => {
-    // Calcula nome do mês e total de domingos daquele mês
-    const [yStr, mStr] = monthKey.split('-');
-    const year = parseInt(yStr, 10);
-    const month = parseInt(mStr, 10) - 1; // 0-indexed
-    const monthName = formatMonthName(year, month);
-    
-    // Pega todos os domingos daquele mês (não apenas os passados)
-    const monthSundays = getSundaysInMonth(year, month);
-    const totalPossible = monthSundays.length;
+  // Agrupa por mês
+  const byMonth = {};
+  allAttendances.forEach(att => {
+    const key = att.month_key;
+    if (!byMonth[key]) byMonth[key] = [];
+    byMonth[key].push(att);
+  });
 
-    const monthAtts = attendancesByMonth[monthKey] || [];
+  const memberMap = {};
+  members.forEach(m => memberMap[m.id] = m);
+
+  Object.keys(byMonth).sort().reverse().forEach(monthKey => {
+    const [y, m] = monthKey.split('-');
+    const monthTitle = formatMonthName(parseInt(y), parseInt(m) - 1);
+
+    const monthEl = document.createElement('div');
+    monthEl.className = 'history-month-group';
+    monthEl.innerHTML = `<h3 class="history-month-title">${monthTitle}</h3>`;
     
-    // Monta mapa de presenças por membro para este mês
-    const attendanceMap = {};
-    members.forEach(m => attendanceMap[m.id] = 0);
-    monthAtts.forEach(a => {
-      if (attendanceMap[a.member_id] !== undefined) {
-        attendanceMap[a.member_id]++;
-      }
+    // Calcula contagem no mês
+    const counts = {};
+    byMonth[monthKey].forEach(att => {
+      counts[att.member_id] = (counts[att.member_id] || 0) + 1;
     });
 
-    // Acha quem tem 100% e o maior número de presenças
-    let maxCount = 0;
-    Object.values(attendanceMap).forEach(c => {
-      if (c > maxCount) maxCount = c;
+    // Ordena membros por count
+    const sortedMembers = Object.keys(counts).sort((a,b) => counts[b] - counts[a]);
+    const maxCount = sortedMembers.length ? counts[sortedMembers[0]] : 0;
+
+    sortedMembers.forEach((mId, index) => {
+      const name = memberMap[mId]?.name || 'Membro';
+      const c = counts[mId];
+      // Exibe uma coroa se for o maior
+      const badge = (c === maxCount && c > 0) ? '<span title="Maior presença" style="color:var(--gold); margin-left:6px;">♔</span>' : '';
+      
+      const item = document.createElement('div');
+      item.className = 'history-item animate-cardEntrance animate-delay-' + (index % 5 + 1);
+      item.innerHTML = `
+        <span class="history-item__name">${name} ${badge}</span>
+        <span class="history-item__count">${c} missas</span>
+      `;
+      monthEl.appendChild(item);
     });
 
-    const monthContainer = document.createElement('div');
-    monthContainer.className = 'history-month-block';
-    monthContainer.style.marginBottom = '32px';
-
-    monthContainer.innerHTML = `
-      <h3 style="color: var(--gold); font-size: 15px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; text-align: center;">${monthName}</h3>
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        ${members.map(member => {
-          const count = attendanceMap[member.id] || 0;
-          const is100Percent = count === totalPossible && totalPossible > 0;
-          const isTop = count === maxCount && count > 0;
-          const initials = member.initials || member.name.slice(0, 2).toUpperCase();
-          
-          return `
-            <div class="ranking-row" style="padding: 12px 16px;">
-              <div class="avatar avatar--sm">${initials}</div>
-              <div class="ranking-row__info" style="flex: 1; display: flex; justify-content: space-between; align-items: center;">
-                <div class="ranking-row__name" style="margin-bottom: 0;">
-                  ${member.name}
-                  ${isTop ? '<span title="Mais presenças no mês" style="color: var(--gold); margin-left: 4px; font-size: 14px;">♔</span>' : ''}
-                  ${is100Percent ? '<span title="Completou o mês" style="color: var(--gold); margin-left: 4px; font-size: 14px;">✦</span>' : ''}
-                </div>
-                <div class="ranking-row__count" style="margin-top: 0; font-size: 14px;">${count}/${totalPossible}</div>
-              </div>
-            </div>
-          `;
-        }).join('')}
-      </div>
-    `;
-
-    listEl.appendChild(monthContainer);
+    container.appendChild(monthEl);
   });
 }
 
 /**
  * Renderiza o status do mês atual para o admin.
  */
-export function renderAdminMonthStatus(container, members, monthAttendances, totalPossible) {
+export function renderAdminMonthStatus(container, members, monthAttendances) {
   const map = {};
   members.forEach(m => map[m.id] = 0);
   monthAttendances.forEach(a => {
@@ -332,9 +358,55 @@ export function renderAdminMonthStatus(container, members, monthAttendances, tot
       <div class="ranking-row" style="padding: 8px 12px; min-height: unset;">
         <div class="ranking-row__info" style="flex: 1; display: flex; justify-content: space-between; flex-direction: row; align-items: center;">
           <span style="color: var(--cream); font-size: 13px;">${m.name}</span>
-          <span style="color: var(--gold); font-size: 13px;">${map[m.id] || 0}/${totalPossible} domingos</span>
+          <span style="color: var(--gold); font-size: 13px;">${map[m.id] || 0} missas</span>
         </div>
       </div>
     `;
   }).join('');
+}
+
+export function renderPersonalHistory(container, attendances, onEditClick) {
+  if (!container) return;
+  container.innerHTML = '';
+  
+  if (!attendances || attendances.length === 0) {
+    container.innerHTML = '<div style="color:var(--cream-dim); font-size:13px; font-style:italic; text-align:center;">Nenhuma missa registrada ainda este mês.</div>';
+    return;
+  }
+
+  // Ordena por data decrescente
+  const sorted = [...attendances].sort((a,b) => {
+    const d1 = a.mass_date || a.sunday_date;
+    const d2 = b.mass_date || b.sunday_date;
+    return d2.localeCompare(d1);
+  });
+
+  sorted.forEach(att => {
+    const dateStr = att.mass_date || att.sunday_date;
+    const longDate = formatLongDate(dateStr);
+    
+    let metaText = '';
+    if (att.location && att.mass_time) metaText = `${att.location} • ${att.mass_time}`;
+    else if (att.location) metaText = att.location;
+    else if (att.mass_time) metaText = att.mass_time;
+    else metaText = 'Local e horário não informados';
+
+    const card = document.createElement('div');
+    card.className = 'history-card';
+    card.style.marginBottom = '8px';
+    card.innerHTML = `
+      <div class="history-card__info">
+        <div class="history-card__date">${longDate}</div>
+        <div class="history-card__meta">${metaText}</div>
+      </div>
+      <button class="history-card__edit">Editar</button>
+    `;
+
+    const editBtn = card.querySelector('.history-card__edit');
+    editBtn.addEventListener('click', () => {
+      if (onEditClick) onEditClick(att);
+    });
+
+    container.appendChild(card);
+  });
 }

@@ -1,4 +1,6 @@
-// ============================================================
+import os
+
+app_js_content = """// ============================================================
 // CONFRARIA DOS CRISMADOS — app.js
 // Orquestrador principal: estado global, auth, roteamento
 // ============================================================
@@ -283,7 +285,7 @@ async function handleSaveMass() {
 
   let success = false;
   if (id) {
-    const res = await updateAttendance(id, { mass_date: dateStr, location, mass_time: time });
+    const res = await updateAttendance(id, dateStr, location, time);
     success = res.success;
   } else {
     const res = await registerAttendance(member.id, dateStr, monthKey, location, time);
@@ -526,3 +528,9 @@ function showLoadingOverlay(show) {
 // ─── ARRANQUE ─────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', init);
+"""
+
+with open('js/app.js', 'w', encoding='utf-8') as f:
+    f.write(app_js_content)
+
+print('app.js updated successfully.')

@@ -16,10 +16,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
   <!-- CSS -->
-  <link rel="stylesheet" href="css/main.css" />
-  <link rel="stylesheet" href="css/animations.css" />
-  <link rel="stylesheet" href="css/components.css" />
-  <link rel="stylesheet" href="css/certificate.css" />
+  <link rel="stylesheet" href="css/main.css?v=2" />
+  <link rel="stylesheet" href="css/animations.css?v=2" />
+  <link rel="stylesheet" href="css/components.css?v=2" />
+  <link rel="stylesheet" href="css/certificate.css?v=2" />
 </head>
 <body>
 
@@ -150,21 +150,17 @@
       </div>
 
       <!-- Stats -->
-      <div class="stats-row" aria-label="Estatísticas do mês">
+      <div class="stats-row" aria-label="Estatísticas do mês" style="justify-content: center;">
         <div class="stat-box">
           <div id="stat-count" class="stat-box__value">0</div>
           <div class="stat-box__label">Missas este mês</div>
         </div>
-        <div class="stat-box">
-          <div id="stat-streak" class="stat-box__value">0</div>
-          <div class="stat-box__label">Domingos seguidos</div>
-        </div>
       </div>
 
-      <!-- Velas do ciclo dominical -->
-      <div class="candles-section" aria-label="Domingos de Maio">
-        <div class="candles-section__title">Domingos de Maio</div>
-        <div id="candles-container" class="candles-row" aria-label="Velas dos domingos"></div>
+      <!-- Velas do ciclo de missas -->
+      <div class="candles-section" aria-label="Missas de Maio">
+        <div id="candles-section-title" class="candles-section__title">Missas do Mês</div>
+        <div id="candles-container" class="candles-row" aria-label="Velas das missas" style="flex-wrap: wrap;"></div>
       </div>
 
       <!-- Divisor -->
@@ -175,13 +171,20 @@
       <!-- Botão principal de registro -->
       <button
         id="btn-register"
-        class="btn-register btn-register--disabled"
-        aria-label="Registrar presença deste domingo"
-        disabled
+        class="btn-register btn-register--active"
+        aria-label="Registrar uma missa"
       >
-        <span class="btn-register__icon">☩</span>
-        O registro abre no próximo domingo
+        <span class="btn-register__icon">✝</span>
+        Registrar uma missa
       </button>
+
+      <!-- Histórico Pessoal -->
+      <div class="section" aria-label="Suas Missas Este Mês" style="margin-top: 32px;">
+        <div class="section-label" style="margin-bottom: 16px;">Suas Missas Este Mês</div>
+        <div id="personal-history-container" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Preenchido dinamicamente -->
+        </div>
+      </div>
 
       <!-- Divisor -->
       <div class="ornamental-divider page-padding" aria-hidden="true">
@@ -375,7 +378,40 @@
 <div id="toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
 <!-- ─── SCRIPTS (ES Modules) ─────────────────────────────── -->
-<script type="module" src="js/app.js"></script>
+<script type="module" src="js/app.js?v=2"></script>
+
+  <!-- Modal de Registro de Missa -->
+  <div id="modal-register" class="modal-overlay hidden" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-labelledby="modal-title">
+      <h2 id="modal-title" class="ranking-title" style="color: var(--gold); margin-bottom: 16px; font-size: 20px;">Registrar Missa</h2>
+      
+      <form id="form-register-mass" novalidate>
+        <input type="hidden" id="input-mass-id" />
+        
+        <div class="form-group">
+          <label class="form-label" for="input-mass-date">Data da missa</label>
+          <div id="chips-date-container" class="chips-row">
+            <!-- Chips injetados pelo JS -->
+          </div>
+          <input type="date" id="input-mass-date" class="form-input hidden" required />
+          <div id="error-mass-date" class="form-error hidden">Você já registrou uma missa neste dia.</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-mass-location">Onde você foi?</label>
+          <input type="text" id="input-mass-location" class="form-input" placeholder="Ex: Paróquia São José..." maxlength="80" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-mass-time">Horário da missa</label>
+          <input type="text" id="input-mass-time" class="form-input" placeholder="Ex: 19h30" maxlength="10" />
+        </div>
+
+        <button type="submit" class="btn-auth" id="btn-save-mass">Registrar missa</button>
+        <button type="button" class="btn-cancel" id="btn-cancel-mass">Cancelar</button>
+      </form>
+    </div>
+  </div>
 
 </body>
 </html>

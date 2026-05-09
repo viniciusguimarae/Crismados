@@ -1,54 +1,9 @@
-// ============================================================
-// CONFRARIA DOS CRISMADOS — dates.js
-// Utilitários de data: domingos, mês, streak, detecção
-// ============================================================
-
-import { DEBUG_SIMULATE_SUNDAY, DEBUG_SUNDAY_DATE } from './config.js';
-
-/**
- * Retorna a data de hoje como objeto Date.
- * Em modo debug, retorna a data simulada se for domingo.
- * @returns {Date}
- */
-export function getToday() {
-  if (DEBUG_SIMULATE_SUNDAY && DEBUG_SUNDAY_DATE) {
-    const [y, m, d] = DEBUG_SUNDAY_DATE.split('-').map(Number);
-    return new Date(y, m - 1, d);
-  }
-  return new Date();
-}
-
-/**
- * Verifica se hoje é domingo.
- * @returns {boolean}
- */
-export function isSunday() {
-  return getToday().getDay() === 0;
-}
-
-/**
- * Formata uma Date para 'YYYY-MM-DD'.
- * @param {Date} date
- * @returns {string}
- */
-export function toDateString(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
-
-/**
- * Verifica se a janela de registro está aberta:
- * Domingo o dia todo (00:00–23:59) + Segunda até 23:59.
- * @returns {boolean}
- */
-
+const content = `
 export function getCurrentMonthKey() {
   const today = getToday();
   const y = today.getFullYear();
   const m = String(today.getMonth() + 1).padStart(2, '0');
-  return `${y}-${m}`;
+  return \`\${y}-\${m}\`;
 }
 
 export function getCurrentMonthName() {
@@ -58,13 +13,13 @@ export function getCurrentMonthName() {
 
 export function formatMonthName(year, month) {
   const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-  return `${months[month]} de ${year}`;
+  return \`\${months[month]} de \${year}\`;
 }
 
 export function formatShortDate(dateStr) {
   const [, m, d] = dateStr.split('-');
   const months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
-  return `${d}/${months[parseInt(m) - 1]}`;
+  return \`\${d}/\${months[parseInt(m) - 1]}\`;
 }
 
 export function formatLongDate(dateStr) {
@@ -72,7 +27,7 @@ export function formatLongDate(dateStr) {
   const date = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
   const weekDays = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
   const months = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
-  return `${weekDays[date.getDay()]}, ${d} de ${months[date.getMonth()]}`;
+  return \`\${weekDays[date.getDay()]}, \${d} de \${months[date.getMonth()]}\`;
 }
 
 export function getPastDays(n) {
@@ -90,3 +45,7 @@ export function getCandleHeightClass(index) {
   const heights = ['md', 'sm', 'lg', 'sm', 'md', 'sm', 'lg', 'md'];
   return heights[index % heights.length];
 }
+`;
+
+const fs = require('fs');
+fs.appendFileSync('js/dates.js', content, 'utf-8');

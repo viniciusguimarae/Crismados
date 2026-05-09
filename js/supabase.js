@@ -51,7 +51,7 @@ export async function getMonthAttendances(monthKey) {
   try {
     const { data, error } = await getClient()
       .from('attendances')
-      .select('id, member_id, sunday_date, month_key')
+      .select('id, member_id, mass_date, month_key')
       .eq('month_key', monthKey);
     if (error) throw error;
     return { data, error: null };
@@ -71,10 +71,10 @@ export async function getMemberAttendances(memberId, monthKey) {
   try {
     const { data, error } = await getClient()
       .from('attendances')
-      .select('id, sunday_date')
+      .select('id, mass_date, location, mass_time')
       .eq('member_id', memberId)
       .eq('month_key', monthKey)
-      .order('sunday_date');
+      .order('mass_date');
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
@@ -85,15 +85,15 @@ export async function getMemberAttendances(memberId, monthKey) {
 
 /**
  * Busca presenças registradas para um domingo específico.
- * @param {string} sundayDate - formato 'YYYY-MM-DD'
+ * @param {string} massDate - formato 'YYYY-MM-DD'
  * @returns {Promise<{ data: Array|null, error: Error|null }>}
  */
-export async function getTodayAttendances(sundayDate) {
+export async function getTodayAttendances(massDate) {
   try {
     const { data, error } = await getClient()
       .from('attendances')
-      .select('id, member_id, sunday_date')
-      .eq('sunday_date', sundayDate);
+      .select('id, member_id, mass_date')
+      .eq('mass_date', massDate);
     if (error) throw error;
     return { data, error: null };
   } catch (error) {
@@ -105,16 +105,16 @@ export async function getTodayAttendances(sundayDate) {
 /**
  * Verifica se um membro já registrou presença em um domingo.
  * @param {string} memberId
- * @param {string} sundayDate
+ * @param {string} massDate
  * @returns {Promise<{ attended: boolean, error: Error|null }>}
  */
-export async function checkAttendance(memberId, sundayDate) {
+export async function checkAttendance(memberId, massDate) {
   try {
     const { data, error } = await getClient()
       .from('attendances')
       .select('id')
       .eq('member_id', memberId)
-      .eq('sunday_date', sundayDate)
+      .eq('mass_date', massDate)
       .maybeSingle();
     if (error) throw error;
     return { attended: !!data, error: null };
@@ -126,17 +126,17 @@ export async function checkAttendance(memberId, sundayDate) {
 
 /**
  * Registra a presença de um membro em um domingo.
- * A constraint UNIQUE(member_id, sunday_date) no banco evita duplicatas.
+ * A constraint UNIQUE(member_id, mass_date) no banco evita duplicatas.
  * @param {string} memberId
- * @param {string} sundayDate - 'YYYY-MM-DD'
+ * @param {string} massDate - 'YYYY-MM-DD'
  * @param {string} monthKey - 'YYYY-MM'
  * @returns {Promise<{ success: boolean, error: Error|null }>}
  */
-export async function registerAttendance(memberId, sundayDate, monthKey) {
+export async function registerAttendance(memberId, massDate, monthKey, location = '', massTime = '') {
   try {
     const { error } = await getClient()
       .from('attendances')
-      .insert({ member_id: memberId, sunday_date: sundayDate, month_key: monthKey });
+      .insert({ member_id: memberId, mass_date: massDate, month_key: monthKey, location, mass_time });
 
     if (error) {
       // Código 23505 = violação de constraint UNIQUE (duplicata)
@@ -154,23 +154,46 @@ export async function registerAttendance(memberId, sundayDate, monthKey) {
 
 /**
  * Remove uma presença (apenas Admin).
- * @param {string} memberId
- * @param {string} sundayDate
+ * @param {string} id
  * @returns {Promise<{ success: boolean, error: Error|null }>}
  */
-export async function removeAttendance(memberId, sundayDate) {
+export async function removeAttendance(id) {
   try {
     const { error } = await getClient()
       .from('attendances')
       .delete()
-      .eq('member_id', memberId)
-      .eq('sunday_date', sundayDate);
+      .eq('id', id);
 
     if (error) throw error;
     return { success: true, error: null };
   } catch (error) {
     console.error('[Supabase] removeAttendance:', error);
     return { success: false, error };
+  }
+}
+
+/**
+ * Atualiza um registro existente de presença.
+ * @param {string} id - ID do registro
+ * @param {object} updates - { mass_date, location, mass_time }
+ */
+export async function updateAttendance(id, updates) {
+  try {
+    const { error } = await getClient()
+      .from('attendances')
+      .update(updates)
+      .eq('id', id);
+
+    if (error) {
+      if (error.code === '23505') {
+        return { success: false, duplicate: true, error };
+      }
+      throw error;
+    }
+    return { success: true, duplicate: false, error: null };
+  } catch (error) {
+    console.error('[Supabase] updateAttendance:', error);
+    return { success: false, duplicate: false, error };
   }
 }
 
@@ -183,7 +206,7 @@ export async function getAllAttendances() {
     const { data, error } = await getClient()
       .from('attendances')
       .select('*')
-      .order('sunday_date', { ascending: false });
+      .order('mass_date', { ascending: false });
     if (error) throw error;
     return { data, error: null };
   } catch (error) {

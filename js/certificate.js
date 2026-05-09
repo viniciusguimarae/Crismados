@@ -7,30 +7,18 @@ import { getCurrentMonthName, toDateString } from './dates.js';
 
 /**
  * Verifica se um membro é elegível para o certificado do mês.
- * Condição: todos os domingos do mês já passaram E o membro frequentou todos.
+ * Condição: Ter participado de pelo menos 4 missas no mês.
  *
- * @param {string[]} attendedDates - datas '2026-05-03' frequentadas
- * @param {Date[]} allSundays - todos os domingos do mês
+ * @param {string[]} attendedDates - datas 'YYYY-MM-DD' frequentadas
  * @returns {{ eligible: boolean, attended: number, total: number, remaining: number }}
  */
-export function checkCertificateEligibility(attendedDates, allSundays) {
-  const today = new Date();
-  const todayStr = toDateString(today);
+export function checkCertificateEligibility(attendedDates) {
+  const target = 4;
+  const attended = attendedDates.length;
+  const eligible = attended >= target;
+  const remaining = eligible ? 0 : target - attended;
 
-  // Apenas domingos que já passaram contam
-  const pastSundays = allSundays.filter(s => toDateString(s) <= todayStr);
-  const total = allSundays.length;
-  const pastTotal = pastSundays.length;
-
-  const attended = pastSundays.filter(s => attendedDates.includes(toDateString(s))).length;
-
-  // Mês completo = todos os domingos passaram e membro foi em todos
-  const monthComplete = pastTotal === total;
-  const eligible = monthComplete && attended === total;
-
-  const remaining = total - attended;
-
-  return { eligible, attended, total, pastTotal, remaining, monthComplete };
+  return { eligible, attended, total: target, remaining };
 }
 
 /**
@@ -60,8 +48,8 @@ export function renderCertificate(container, member, eligibility) {
             </div>
 
             <p class="certificate-body">
-              Certificamos que <strong>${member.name}</strong> participou de todas as
-              missas dominicais de ${monthWord} de ${yearWord}, permanecendo firme
+              Certificamos que <strong>${member.name}</strong> participou fervorosamente de missas
+              durante <strong>${monthWord} de ${yearWord}</strong>, permanecendo firme
               em sua caminhada de fé.
             </p>
 
@@ -99,17 +87,14 @@ export function renderCertificate(container, member, eligibility) {
 
   } else {
     // Certificado bloqueado
-    const remaining = eligibility.total - eligibility.attended;
-    const msg = "Faltam " + remaining + (remaining === 1 ? ' domingo' : ' domingos') + " para completar " + monthWord + ".";
-
-
+    const msg = "Faltam " + eligibility.remaining + (eligibility.remaining === 1 ? ' missa' : ' missas') + " para completar o pergaminho de " + monthWord + ".";
 
     container.innerHTML = `
       <div class="certificate-locked">
         <div class="certificate-locked__icon">⛨</div>
         <div class="certificate-locked__title">Pergaminho Selado</div>
         <p class="certificate-locked__message">
-          Complete todas as missas do mês para desbloquear seu pergaminho.
+          Complete pelo menos 4 missas no mês para desbloquear seu pergaminho.
         </p>
         <div class="certificate-locked__remaining">${msg}</div>
         <div class="certificate-locked__preview"></div>
@@ -124,7 +109,7 @@ export function renderCertificate(container, member, eligibility) {
  * @param {string} monthName
  */
 async function shareCertificate(member, monthName) {
-  const text = `✝ Certificado de Perseverança\n\n${member.name} participou de todas as missas dominicais de ${monthName}.\n\n— Confraria dos Crismados`;
+  const text = `✝ Certificado de Perseverança\n\n${member.name} completou suas missas de ${monthName}.\n\n— Confraria dos Crismados`;
 
   if (navigator.share) {
     try {
