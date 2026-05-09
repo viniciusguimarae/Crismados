@@ -250,12 +250,10 @@ export async function signUp(email, password, name) {
 
     if (authError) {
       // Email já cadastrado
-      if (authError.message?.toLowerCase().includes('already registered') ||
-          authError.message?.toLowerCase().includes('email') ||
-          authError.status === 422 || authError.status === 400) {
+      if (authError.message?.toLowerCase().includes('already registered')) {
         return { user: null, member: null, error: authError, errorType: 'email_taken' };
       }
-      throw authError;
+      return { user: null, member: null, error: authError, errorType: 'auth_failed', message: authError.message };
     }
 
     const user = authData.user;

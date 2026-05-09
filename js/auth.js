@@ -263,6 +263,13 @@ async function handleRegister(container) {
   if (error) {
     if (errorType === 'email_taken') {
       showToast('Este e-mail já está cadastrado. Tente entrar.', 'error');
+    } else if (errorType === 'auth_failed') {
+      // Traduz o rate limit para português de forma mais amigável
+      if (error.message?.toLowerCase().includes('rate limit')) {
+        showToast('Muitas contas criadas neste momento. Tente novamente em uma hora.', 'error', 4000);
+      } else {
+        showToast(`Erro do servidor: ${error.message}`, 'error', 4000);
+      }
     } else if (errorType === 'insert_failed') {
       showToast('Erro ao salvar perfil. Tente novamente.', 'error');
     } else {
