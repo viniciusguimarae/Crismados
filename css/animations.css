@@ -1,0 +1,206 @@
+/* ============================================================
+   CONFRARIA DOS CRISMADOS — animations.css
+   Todos os @keyframes e classes de animação
+   ============================================================ */
+
+/* ─── Chama das velas ─────────────────────────────────────── */
+
+/* Oscilação contínua da chama acesa */
+@keyframes flicker {
+  0%,  100% { transform: scaleX(1.00) scaleY(1.00) translateX(0);    opacity: 1.00; }
+  15%        { transform: scaleX(0.88) scaleY(1.06) translateX(-1px); opacity: 0.96; }
+  30%        { transform: scaleX(1.06) scaleY(0.96) translateX(1px);  opacity: 1.00; }
+  50%        { transform: scaleX(0.94) scaleY(1.04) translateX(0);    opacity: 0.97; }
+  70%        { transform: scaleX(1.04) scaleY(0.98) translateX(1px);  opacity: 1.00; }
+  85%        { transform: scaleX(0.92) scaleY(1.05) translateX(-1px); opacity: 0.95; }
+}
+
+/* Acendimento da vela (entrada do fogo) */
+@keyframes candleLight {
+  0%   { opacity: 0; transform: scaleX(0.4) scaleY(0.5); filter: blur(3px); }
+  40%  { opacity: 0.7; transform: scaleX(1.1) scaleY(1.1); filter: blur(0.5px); }
+  70%  { opacity: 0.9; transform: scaleX(0.95) scaleY(1.05); filter: blur(0); }
+  100% { opacity: 1; transform: scaleX(1) scaleY(1); filter: blur(0); }
+}
+
+/* Expansão do brilho ao redor da vela */
+@keyframes glowExpand {
+  0%   { opacity: 0; transform: scale(0.5); }
+  50%  { opacity: 1; }
+  100% { opacity: 0.6; transform: scale(1); }
+}
+
+/* Pulso dourado contínuo (vela atual) */
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 8px 2px rgba(201, 168, 76, 0.2); }
+  50%       { box-shadow: 0 0 16px 6px rgba(201, 168, 76, 0.4); }
+}
+
+/* Pulso dourado para orbs (todos presentes) */
+@keyframes orbPulseGold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0); border-color: rgba(201, 168, 76, 0.3); }
+  50%       { box-shadow: 0 0 12px 4px rgba(201, 168, 76, 0.5); border-color: rgba(201, 168, 76, 0.8); }
+}
+
+/* ─── Transições de tela ──────────────────────────────────── */
+
+/* Entrada com fade + movimento sutil para cima */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Saída */
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* ─── Toast ───────────────────────────────────────────────── */
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) translateX(-50%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px) translateX(-50%);
+  }
+}
+
+/* ─── Certificado ─────────────────────────────────────────── */
+
+/* Revelação do pergaminho */
+@keyframes certificateReveal {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Brilho no selo dourado */
+@keyframes sealShimmer {
+  0%   { box-shadow: 0 0 8px 2px rgba(201, 168, 76, 0.3); }
+  50%  { box-shadow: 0 0 24px 8px rgba(201, 168, 76, 0.6), 0 0 40px 16px rgba(201, 168, 76, 0.2); }
+  100% { box-shadow: 0 0 8px 2px rgba(201, 168, 76, 0.3); }
+}
+
+/* ─── Efeito "Todos Presentes" ────────────────────────────── */
+
+/* Explosão de luz dourada radial */
+@keyframes goldBurst {
+  0%   { opacity: 0; transform: scale(0.3); }
+  30%  { opacity: 0.4; }
+  70%  { opacity: 0.3; }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+/* Mensagem especial fade in */
+@keyframes gloryFadeIn {
+  0%   { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Progress bars ───────────────────────────────────────── */
+
+@keyframes progressFill {
+  from { width: 0%; }
+  to   { width: var(--progress-target); }
+}
+
+/* ─── Loading / Pulsação ──────────────────────────────────── */
+
+@keyframes pulse-gold {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(1.08); }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.65; }
+}
+
+/* ─── Entrada dos cards (member cards) ───────────────────── */
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Shimmer (loading skeleton) ─────────────────────────── */
+
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+/* ─── Classes de aplicação de animações ──────────────────── */
+
+.animate-fadeUp {
+  animation: fadeUp 0.5s ease forwards;
+}
+
+.animate-fadeUp-delayed {
+  opacity: 0;
+  animation: fadeUp 0.5s ease forwards;
+}
+
+.animate-cardEntrance {
+  animation: cardEntrance 0.4s ease forwards;
+  opacity: 0;
+}
+
+/* Delays para entrada sequencial dos cards */
+.animate-delay-1 { animation-delay: 0.05s; }
+.animate-delay-2 { animation-delay: 0.10s; }
+.animate-delay-3 { animation-delay: 0.15s; }
+.animate-delay-4 { animation-delay: 0.20s; }
+.animate-delay-5 { animation-delay: 0.25s; }
+.animate-delay-6 { animation-delay: 0.30s; }
+
+/* Candle lighting (acionado via JS) */
+.candle--lighting .candle__flame {
+  animation: candleLight 0.7s ease-out forwards, flicker 2.5s ease-in-out 0.7s infinite;
+}
+
+.candle--lit .candle__flame {
+  animation: flicker 2.5s ease-in-out infinite;
+}
+
+/* Pulse na vela do domingo atual */
+.candle--current:not(.candle--lit) .candle__body {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* Animação "todos presentes" no orb */
+.orb--present-all {
+  animation: orbPulseGold 1.5s ease-in-out 3;
+}

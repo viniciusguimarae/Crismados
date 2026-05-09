@@ -1,0 +1,1058 @@
+/* ============================================================
+   CONFRARIA DOS CRISMADOS — components.css
+   Cards, botões, nav, velas, avatares, toasts, ranking
+   ============================================================ */
+
+/* ─── TELA DE ENTRADA ─────────────────────────────────────── */
+
+#screen-entry {
+  padding: 48px var(--space-md) var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-lg);
+}
+
+.entry-emblem {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,168,76,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: var(--gold);
+  background: radial-gradient(circle, rgba(107,26,42,0.3), transparent);
+  box-shadow: 0 0 20px rgba(201,168,76,0.1);
+}
+
+.entry-title {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 6vw, 30px);
+  font-weight: 500;
+  color: var(--cream);
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+.entry-subtitle {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--cream-dim);
+  font-style: italic;
+  letter-spacing: 0.3px;
+}
+
+.entry-quote {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--cream-dim);
+  font-style: italic;
+  max-width: 280px;
+  line-height: 1.7;
+}
+
+.entry-quote cite {
+  display: block;
+  font-style: normal;
+  font-size: 12px;
+  color: var(--gold-dim);
+  margin-top: 4px;
+  letter-spacing: 1px;
+}
+
+/* Grid de membros */
+.members-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+/* Card de membro na entrada */
+.member-card {
+  background: var(--stone);
+  border: var(--border-gold-faint);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  transition: border-color 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+  user-select: none;
+}
+
+.member-card:active {
+  transform: scale(0.97);
+  border-color: rgba(201,168,76,0.4);
+}
+
+@media (hover: hover) {
+  .member-card:hover {
+    border-color: rgba(201,168,76,0.35);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+}
+
+.member-card__name {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--cream);
+}
+
+.member-card__stat {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--cream-dim);
+}
+
+.member-card__streak {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--gold-dim);
+}
+
+/* ─── AVATAR (iniciais) ───────────────────────────────────── */
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--wine-deep);
+  border: 1px solid rgba(201,168,76,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gold-pale);
+  flex-shrink: 0;
+}
+
+.avatar--lg {
+  width: 52px;
+  height: 52px;
+  font-size: 18px;
+}
+
+.avatar--sm {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+}
+
+/* ─── PAINEL INDIVIDUAL ───────────────────────────────────── */
+
+.panel-header {
+  padding: var(--space-xl) var(--space-md) var(--space-md);
+  border-bottom: var(--border-gold-faint);
+  text-align: center;
+}
+
+.panel-greeting {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--cream);
+}
+
+.panel-month {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--gold-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* Card de quote espiritual */
+.quote-card {
+  background: var(--ink-mid);
+  border: var(--border-gold-faint);
+  border-left: 3px solid var(--gold-dim);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: var(--space-md);
+  margin: var(--space-md);
+}
+
+.quote-card__text {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-style: italic;
+  color: var(--cream);
+  line-height: 1.7;
+}
+
+.quote-card__ref {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--gold-dim);
+  margin-top: 6px;
+  display: block;
+}
+
+/* Stats row */
+.stats-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  margin: 0 var(--space-md) var(--space-md);
+}
+
+.stat-box {
+  background: var(--stone);
+  border: var(--border-gold-faint);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: center;
+}
+
+.stat-box__value {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.stat-box__label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--cream-dim);
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+
+/* ─── BOTÃO PRINCIPAL ─────────────────────────────────────── */
+
+.btn-register {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: calc(100% - var(--space-md) * 2);
+  margin: 0 var(--space-md) var(--space-lg);
+  padding: 18px var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(201,168,76,0.3);
+  background: linear-gradient(135deg, #6b1a2a, #3d0d15);
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
+  letter-spacing: 0.3px;
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.btn-register:active {
+  transform: scale(0.98);
+}
+
+@media (hover: hover) {
+  .btn-register:hover:not(:disabled):not(.btn-register--done):not(.btn-register--disabled) {
+    border-color: rgba(201,168,76,0.6);
+    box-shadow: 0 0 20px rgba(107,26,42,0.4);
+  }
+}
+
+.btn-register--done {
+  background: var(--stone-light);
+  color: var(--gold);
+  border-color: rgba(201,168,76,0.2);
+  cursor: default;
+}
+
+.btn-register--disabled {
+  background: var(--stone);
+  color: var(--cream-dim);
+  border-color: rgba(201,168,76,0.1);
+  cursor: default;
+  opacity: 0.6;
+}
+
+.btn-register__icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* Botão secundário */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  border: var(--border-gold-subtle);
+  background: transparent;
+  color: var(--gold);
+  font-family: var(--font-body);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(201,168,76,0.08);
+  border-color: rgba(201,168,76,0.4);
+}
+
+/* ─── VELAS ───────────────────────────────────────────────── */
+
+.candles-section {
+  margin: 0 var(--space-md) var(--space-lg);
+}
+
+.candles-section__title {
+  font-family: var(--font-body);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--cream-dim);
+  text-align: center;
+  margin-bottom: var(--space-md);
+}
+
+.candles-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 18px;
+}
+
+/* Wrapper de cada vela */
+.candle-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.candle-wrapper__ordinal {
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: var(--cream-dim);
+  letter-spacing: 0.5px;
+}
+
+/* Componente vela em CSS puro */
+.candle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+/* Wrapper da chama (reserva espaço mesmo apagada) */
+.candle__flame-wrapper {
+  height: 32px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin-bottom: -2px;
+}
+
+/* Chama */
+.candle__flame {
+  width: 13px;
+  height: 22px;
+  background: radial-gradient(ellipse at 50% 80%, #fffde4 0%, #ffd700 30%, #ff8c00 65%, transparent 100%);
+  border-radius: 50% 50% 30% 30% / 60% 60% 40% 40%;
+  opacity: 0;
+  transform-origin: center bottom;
+  filter: blur(0.4px);
+  will-change: transform, opacity;
+}
+
+/* Glow da chama */
+.candle__glow {
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 50px;
+  background: radial-gradient(circle, rgba(255,180,50,0.18), transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.candle--lit .candle__glow {
+  opacity: 1;
+}
+
+/* Pavio */
+.candle__wick {
+  width: 2px;
+  height: 7px;
+  background: linear-gradient(to bottom, #4a2a0a, #1a0a00);
+  border-radius: 1px;
+  z-index: 1;
+}
+
+/* Corpo da vela */
+.candle__body {
+  width: 22px;
+  border-radius: 3px 3px 2px 2px;
+  background: linear-gradient(to right, #3d3028 0%, #5a4535 30%, #3d3028 100%);
+  transition: background 0.6s ease, box-shadow 0.4s ease;
+  position: relative;
+}
+
+/* Corpo aceso */
+.candle--lit .candle__body {
+  background: linear-gradient(to right, #b8883a 0%, #e8c96d 40%, #c9a84c 70%, #b8883a 100%);
+}
+
+/* Base da vela */
+.candle__base {
+  width: 30px;
+  height: 8px;
+  background: var(--stone-light);
+  border-radius: 2px;
+  border-top: 1px solid rgba(201,168,76,0.15);
+}
+
+/* Data abaixo */
+.candle-wrapper__date {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: var(--cream-dim);
+  letter-spacing: 1px;
+}
+
+/* Destaque no domingo atual (não aceso) */
+.candle--current .candle__body {
+  box-shadow: 0 0 8px 2px rgba(201,168,76,0.2);
+}
+
+/* Halo "todos presentes" */
+.candle--all-present .candle__glow {
+  background: radial-gradient(circle, rgba(232,201,109,0.3), transparent 70%);
+  width: 70px;
+  height: 70px;
+}
+
+/* Alturas variadas — classe aplicada no elemento .candle pai */
+.candle__body { height: 70px; } /* default */
+.candle--h1 .candle__body { height: 55px; }
+.candle--h2 .candle__body { height: 75px; }
+.candle--h3 .candle__body { height: 100px; }
+.candle--h4 .candle__body { height: 75px; }
+.candle--h5 .candle__body { height: 55px; }
+
+/* ─── NAVEGAÇÃO INFERIOR ──────────────────────────────────── */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  height: var(--bottom-nav-height);
+  background: rgba(26, 20, 16, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: var(--border-gold-faint);
+  display: flex;
+  align-items: stretch;
+  z-index: 100;
+}
+
+.nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: var(--cream-dim);
+  transition: color 0.2s ease;
+  padding: 0;
+  font-family: var(--font-body);
+}
+
+.nav-tab__icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.nav-tab__label {
+  font-size: 10px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.nav-tab--active {
+  color: var(--gold);
+}
+
+.nav-tab--active .nav-tab__icon {
+  filter: drop-shadow(0 0 6px rgba(201,168,76,0.5));
+}
+
+/* ─── TOAST ───────────────────────────────────────────────── */
+
+#toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  z-index: 500;
+  max-width: calc(100% - 32px);
+  min-width: 240px;
+  padding: 12px 20px;
+  background: var(--stone-light);
+  border: var(--border-gold-subtle);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--cream);
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+}
+
+#toast.toast--visible {
+  animation: toastSlideIn 0.35s ease forwards;
+}
+
+#toast.toast--hiding {
+  animation: toastSlideOut 0.35s ease forwards;
+}
+
+#toast.toast--success {
+  border-color: rgba(201,168,76,0.5);
+  color: var(--gold-light);
+}
+
+#toast.toast--error {
+  border-color: rgba(139,42,42,0.5);
+  color: #e07070;
+}
+
+/* ─── RANKING ─────────────────────────────────────────────── */
+
+.ranking-header {
+  padding: var(--space-xl) var(--space-md) var(--space-md);
+  text-align: center;
+  border-bottom: var(--border-gold-faint);
+}
+
+.ranking-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+}
+
+.ranking-month {
+  font-size: 13px;
+  color: var(--cream-dim);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 4px;
+  font-family: var(--font-body);
+}
+
+.ranking-list {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.ranking-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: var(--stone);
+  border: var(--border-gold-faint);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  transition: border-color 0.2s ease;
+}
+
+.ranking-row--first {
+  border-color: rgba(201,168,76,0.35);
+  background: linear-gradient(135deg, rgba(61,13,21,0.5), var(--stone));
+}
+
+.ranking-row__numeral {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--cream-dim);
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.ranking-row--first .ranking-row__numeral {
+  color: var(--gold);
+}
+
+.ranking-row__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ranking-row__name {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--cream);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ranking-row__count {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--cream-dim);
+  margin-top: 2px;
+}
+
+.ranking-row__progress-track {
+  width: 100%;
+  height: 3px;
+  background: var(--stone-light);
+  border-radius: 2px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.ranking-row__progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--wine), var(--gold-dim));
+  border-radius: 2px;
+  transition: width 0.6s ease-out;
+  width: 0%;
+}
+
+.ranking-row__honor {
+  font-size: 16px;
+  flex-shrink: 0;
+  color: var(--gold);
+}
+
+/* ─── CONFRARIA (progresso coletivo) ─────────────────────── */
+
+.confraria-header {
+  padding: var(--space-xl) var(--space-md) var(--space-md);
+  text-align: center;
+  border-bottom: var(--border-gold-faint);
+}
+
+.confraria-section {
+  margin: var(--space-md);
+  background: var(--stone);
+  border: var(--border-gold-faint);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+}
+
+.confraria-section__title {
+  font-family: var(--font-body);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--gold-dim);
+  margin-bottom: var(--space-md);
+  text-align: center;
+}
+
+/* Orbs de membros */
+.orbs-row {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.orb-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.orb {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--cream-dim);
+  background: var(--stone-light);
+  border: 1px solid rgba(201,168,76,0.15);
+  transition: all 0.4s ease;
+}
+
+.orb--present {
+  background: var(--wine-deep);
+  border-color: rgba(201,168,76,0.45);
+  color: var(--gold-light);
+  box-shadow: 0 0 12px rgba(201,168,76,0.15);
+}
+
+.orb__name {
+  font-family: var(--font-body);
+  font-size: 10px;
+  color: var(--cream-dim);
+  letter-spacing: 0.3px;
+}
+
+/* Barra de fidelidade coletiva */
+.fidelity-bar-track {
+  width: 100%;
+  height: 6px;
+  background: var(--stone-light);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  margin: var(--space-sm) 0;
+}
+
+.fidelity-bar-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--wine), var(--gold));
+  border-radius: var(--radius-full);
+  transition: width 0.6s ease-out;
+  width: 0%;
+}
+
+.fidelity-stats {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--cream-dim);
+}
+
+.fidelity-percentage {
+  font-family: var(--font-display);
+  font-size: 24px;
+  color: var(--gold);
+  text-align: center;
+  margin-bottom: var(--space-sm);
+}
+
+/* Mensagem "todos presentes" */
+.glory-message {
+  display: none;
+  text-align: center;
+  padding: var(--space-md);
+  margin: var(--space-md);
+  background: linear-gradient(135deg, rgba(61,13,21,0.4), rgba(45,36,24,0.4));
+  border: var(--border-gold-mid);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--gold-light);
+  animation: gloryFadeIn 0.8s ease forwards;
+}
+
+.glory-message.visible {
+  display: block;
+}
+
+/* Burst de luz */
+.gold-burst {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.35), transparent 70%);
+  pointer-events: none;
+  z-index: 300;
+  animation: goldBurst 2s ease forwards;
+}
+
+/* ─── HISTÓRICO ───────────────────────────────────────────── */
+
+.history-header {
+  padding: var(--space-xl) var(--space-md) var(--space-md);
+  text-align: center;
+  border-bottom: var(--border-gold-faint);
+}
+
+.history-list {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.history-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: var(--stone);
+  border: var(--border-gold-faint);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+}
+
+.history-row__name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--cream);
+  flex: 1;
+}
+
+.history-row__count {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--cream-dim);
+}
+
+.history-row__badge {
+  font-size: 14px;
+  color: var(--gold);
+}
+
+/* Placeholder v2 */
+.history-future {
+  margin: var(--space-md);
+  padding: var(--space-md);
+  border: 1px dashed rgba(201,168,76,0.15);
+  border-radius: var(--radius-md);
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--cream-dim);
+  font-style: italic;
+}
+
+/* ─── CARD GENÉRICO ───────────────────────────────────────── */
+
+.card {
+  background: var(--stone);
+  border: var(--border-gold-faint);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+}
+
+/* ─── SECTION PADDING ─────────────────────────────────────── */
+
+.section {
+  padding: 0 var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+/* ─── TELA DE AUTENTICAÇÃO ────────────────────────────────── */
+
+#screen-auth {
+  padding: 52px var(--space-md) var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-lg);
+  min-height: 100%;
+}
+
+.auth-emblem {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,168,76,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: var(--gold);
+  background: radial-gradient(circle, rgba(107,26,42,0.3), transparent);
+  box-shadow: 0 0 20px rgba(201,168,76,0.1);
+  animation: fadeInUp 0.6s ease both;
+}
+
+/* Tabs Entrar / Criar conta */
+.auth-tabs {
+  display: flex;
+  border: var(--border-gold-faint);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  width: 100%;
+  max-width: 320px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 10px 0;
+  background: transparent;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  color: var(--cream-dim);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.auth-tab--active {
+  background: rgba(201,168,76,0.12);
+  color: var(--gold);
+}
+
+/* Formulário */
+.auth-form {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.auth-form--hidden {
+  display: none;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.form-label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--cream-dim);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--stone);
+  border: var(--border-gold-faint);
+  border-radius: var(--radius-md);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+}
+
+.form-input::placeholder {
+  color: rgba(212, 197, 160, 0.3);
+}
+
+.form-input:focus {
+  border-color: rgba(201,168,76,0.4);
+  box-shadow: 0 0 0 2px rgba(201,168,76,0.08);
+}
+
+/* Botão primário da tela de auth */
+.btn-auth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: 16px var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(201,168,76,0.3);
+  background: linear-gradient(135deg, #6b1a2a, #3d0d15);
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, opacity 0.2s ease;
+  letter-spacing: 0.3px;
+  margin-top: var(--space-sm);
+}
+
+.btn-auth:hover:not(:disabled) {
+  border-color: rgba(201,168,76,0.55);
+  box-shadow: 0 0 20px rgba(107,26,42,0.4);
+}
+
+.btn-auth:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-auth:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.btn-auth__icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* Link secundário "Primeira vez?" */
+.auth-link {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--cream-dim);
+  margin-top: 4px;
+}
+
+.auth-link__btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--gold-dim);
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.auth-link__btn:hover {
+  color: var(--gold);
+}
+
+/* Botão "Sair" no header do painel */
+.btn-logout {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  background: none;
+  border: none;
+  padding: 6px 10px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--cream-dim);
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: color 0.2s ease;
+}
+
+.btn-logout:hover {
+  color: var(--gold-dim);
+}
+

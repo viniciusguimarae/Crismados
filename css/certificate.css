@@ -1,0 +1,290 @@
+/* ============================================================
+   CONFRARIA DOS CRISMADOS — certificate.css
+   Estilos do pergaminho / certificado de perseverança
+   ============================================================ */
+
+/* ─── CONTAINER DO CERTIFICADO ────────────────────────────── */
+
+.certificate-section {
+  padding: var(--space-md);
+}
+
+.certificate-locked {
+  background: var(--stone);
+  border: var(--border-gold-faint);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl) var(--space-md);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.certificate-locked__icon {
+  font-size: 36px;
+  color: var(--cream-dim);
+  opacity: 0.5;
+}
+
+.certificate-locked__title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--cream-dim);
+}
+
+.certificate-locked__message {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--cream-dim);
+  font-style: italic;
+  line-height: 1.6;
+  max-width: 260px;
+}
+
+.certificate-locked__remaining {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--gold-dim);
+}
+
+/* Preview desfocado do certificado (quando bloqueado) */
+.certificate-locked__preview {
+  width: 100%;
+  height: 120px;
+  background: linear-gradient(to bottom, var(--parchment-mid), var(--parchment));
+  border-radius: var(--radius-md);
+  filter: blur(4px);
+  opacity: 0.25;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ─── PERGAMINHO DESBLOQUEADO ──────────────────────────────── */
+
+.certificate-unlocked {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.certificate-unlocked.visible {
+  animation: certificateReveal 0.7s ease forwards;
+  pointer-events: auto;
+}
+
+/* O pergaminho em si */
+.certificate {
+  position: relative;
+  background-color: var(--parchment);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl) var(--space-lg);
+  overflow: hidden;
+  /* Textura de papel envelhecido via gradientes sobrepostos */
+  background-image:
+    linear-gradient(145deg, rgba(255,255,255,0.15) 0%, transparent 40%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(139,110,60,0.04) 0px,
+      rgba(139,110,60,0.04) 1px,
+      transparent 1px,
+      transparent 24px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(139,110,60,0.04) 0px,
+      rgba(139,110,60,0.04) 1px,
+      transparent 1px,
+      transparent 24px
+    ),
+    radial-gradient(ellipse at 10% 10%, rgba(201,168,76,0.08), transparent 60%),
+    radial-gradient(ellipse at 90% 90%, rgba(139,110,60,0.08), transparent 60%);
+}
+
+/* Borda dupla ornamental */
+.certificate::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(139,100,40,0.4);
+  border-radius: calc(var(--radius-md) - 4px);
+  pointer-events: none;
+}
+
+.certificate::after {
+  content: '';
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(139,100,40,0.2);
+  border-radius: calc(var(--radius-md) - 8px);
+  pointer-events: none;
+}
+
+/* ─── SELO DOURADO ─────────────────────────────────────────── */
+
+.certificate-seal {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #f0d88a, #c9a84c 50%, #8a6a28 100%);
+  border: 2px solid #8a6a28;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-md);
+  box-shadow: 0 2px 12px rgba(139,100,40,0.4), inset 0 1px 2px rgba(255,255,255,0.3);
+  animation: sealShimmer 3s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
+.certificate-seal__symbol {
+  font-size: 28px;
+  color: #3d0d15;
+  line-height: 1;
+}
+
+/* ─── CONTEÚDO DO CERTIFICADO ──────────────────────────────── */
+
+.certificate-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.certificate-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: #3d1a00;
+  letter-spacing: 1px;
+  line-height: 1.2;
+  margin-bottom: var(--space-sm);
+}
+
+.certificate-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: var(--space-sm) 0;
+}
+
+.certificate-divider::before,
+.certificate-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(139,100,40,0.4);
+}
+
+.certificate-divider__symbol {
+  color: rgba(139,100,40,0.6);
+  font-size: 12px;
+}
+
+.certificate-body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #3d2800;
+  line-height: 1.8;
+  margin: var(--space-md) 0;
+}
+
+.certificate-body strong {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: #3d0d15;
+}
+
+.certificate-signature {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-style: italic;
+  color: rgba(61,26,0,0.7);
+  margin-top: var(--space-md);
+}
+
+.certificate-verse {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-style: italic;
+  color: rgba(61,40,0,0.6);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-sm);
+  border-top: 1px solid rgba(139,100,40,0.2);
+  line-height: 1.6;
+}
+
+/* ─── BOTÕES DO CERTIFICADO ────────────────────────────────── */
+
+.certificate-actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.btn-cert {
+  flex: 1;
+  min-width: 120px;
+  padding: 10px var(--space-md);
+  border-radius: var(--radius-md);
+  border: var(--border-gold-subtle);
+  background: transparent;
+  color: var(--gold);
+  font-family: var(--font-body);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-cert:hover {
+  background: rgba(201,168,76,0.08);
+  border-color: rgba(201,168,76,0.5);
+}
+
+/* ─── GALERIA DE CERTIFICADOS ──────────────────────────────── */
+
+.certificate-gallery {
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.gallery-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  background: var(--stone);
+  border: var(--border-gold-faint);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.gallery-item:hover {
+  border-color: rgba(201,168,76,0.3);
+}
+
+.gallery-item__name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--cream);
+  flex: 1;
+}
+
+.gallery-item__status {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--gold);
+}
+
+.gallery-item__status--locked {
+  color: var(--cream-dim);
+}

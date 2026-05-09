@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d0a07" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <title>Confraria dos Crismados</title>
+  <meta name="description" content="Registro mensal da caminhada dominical da Confraria dos Crismados." />
+
+  <!-- Preload de fontes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/certificate.css" />
+</head>
+<body>
+
+<!-- Elemento de glow no topo -->
+<div class="top-glow" aria-hidden="true"></div>
+
+<!-- ─── LOADING OVERLAY ──────────────────────────────────── -->
+<div id="loading-overlay" role="status" aria-label="Carregando">
+  <div class="loading-cross" aria-hidden="true">✝</div>
+  <div class="loading-text">Confraria dos Crismados</div>
+</div>
+
+<!-- ─── CONTAINER DO APP ─────────────────────────────────── -->
+<div class="app-container">
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- TELA AUTH — LOGIN / CADASTRO (ponto de entrada)       -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section id="screen-auth" class="screen" aria-label="Entrar ou criar conta">
+    <!-- Preenchido dinamicamente por auth.js -->
+  </section><!-- /screen-auth -->
+
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- TELA ENTRADA — mantida como fallback (oculta por padrão) -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section id="screen-entry" class="screen screen--hidden" aria-label="Seleção de membro">
+
+    <!-- Emblema com cruz -->
+    <div class="entry-emblem" aria-hidden="true">✝</div>
+
+    <!-- Título e subtítulo -->
+    <h1 class="entry-title">Confraria<br>dos Crismados</h1>
+    <p class="entry-subtitle">Registro mensal da nossa caminhada dominical</p>
+
+    <!-- Divisor ornamental -->
+    <div class="ornamental-divider" aria-hidden="true">
+      <span class="ornamental-divider__symbol">✦</span>
+    </div>
+
+    <!-- Quote espiritual rotativa -->
+    <blockquote class="entry-quote">
+      <p id="entry-quote-text">"Posso tudo naquele que me fortalece."</p>
+      <cite id="entry-quote-ref">— Filipenses 4,13</cite>
+    </blockquote>
+
+    <!-- Divisor -->
+    <div class="ornamental-divider" aria-hidden="true">
+      <span class="ornamental-divider__symbol">⚜</span>
+    </div>
+
+    <!-- Label da seção -->
+    <div class="section-label" style="margin-bottom: 12px;">Escolha seu nome</div>
+
+    <!-- Grid de membros -->
+    <div id="members-grid" class="members-grid" role="list" aria-label="Membros da Confraria">
+      <!-- Preenchido dinamicamente por ui.js -->
+      <div class="member-card animate-cardEntrance animate-delay-1" style="pointer-events:none;">
+        <div class="avatar">VI</div>
+        <div class="member-card__name">Carregando...</div>
+        <div class="member-card__stat">—</div>
+        <div class="member-card__streak">—</div>
+      </div>
+      <div class="member-card animate-cardEntrance animate-delay-2" style="pointer-events:none;">
+        <div class="avatar">LE</div>
+        <div class="member-card__name">Carregando...</div>
+        <div class="member-card__stat">—</div>
+        <div class="member-card__streak">—</div>
+      </div>
+      <div class="member-card animate-cardEntrance animate-delay-3" style="pointer-events:none;">
+        <div class="avatar">TA</div>
+        <div class="member-card__name">Carregando...</div>
+        <div class="member-card__stat">—</div>
+        <div class="member-card__streak">—</div>
+      </div>
+      <div class="member-card animate-cardEntrance animate-delay-4" style="pointer-events:none;">
+        <div class="avatar">AL</div>
+        <div class="member-card__name">Carregando...</div>
+        <div class="member-card__stat">—</div>
+        <div class="member-card__streak">—</div>
+      </div>
+      <div class="member-card animate-cardEntrance animate-delay-5" style="pointer-events:none;">
+        <div class="avatar">RO</div>
+        <div class="member-card__name">Carregando...</div>
+        <div class="member-card__stat">—</div>
+        <div class="member-card__streak">—</div>
+      </div>
+      <div class="member-card animate-cardEntrance animate-delay-6" style="pointer-events:none;">
+        <div class="avatar">MA</div>
+        <div class="member-card__name">Carregando...</div>
+        <div class="member-card__stat">—</div>
+        <div class="member-card__streak">—</div>
+      </div>
+    </div>
+
+    <!-- Rodapé da tela de entrada -->
+    <div class="ornamental-divider" style="margin-top: auto;" aria-hidden="true">
+      <span class="ornamental-divider__symbol">✝</span>
+    </div>
+    <p class="entry-subtitle" style="font-size:12px; padding-bottom: 24px;">
+      Maio de 2026 · Ad Maiorem Dei Gloriam
+    </p>
+
+  </section><!-- /screen-entry -->
+
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- TELA PRINCIPAL DO APP (pós-seleção de membro)         -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section id="screen-app" class="screen screen--hidden" aria-label="Aplicativo">
+
+    <!-- ── ABA: INÍCIO (painel individual) ─────────────── -->
+    <div id="tab-inicio" class="tab-content" role="tabpanel" aria-label="Início">
+
+      <!-- Cabeçalho com botão Sair -->
+      <div class="panel-header">
+        <button id="btn-logout" class="btn-logout" aria-label="Sair da conta">
+          Sair
+        </button>
+        <h2 id="panel-greeting" class="panel-greeting">Paz e bem.</h2>
+        <div id="panel-month" class="panel-month">Maio de 2026</div>
+      </div>
+
+      <!-- Card de quote espiritual -->
+      <div class="quote-card" aria-label="Versículo do dia">
+        <p id="panel-quote-text" class="quote-card__text">"Posso tudo naquele que me fortalece."</p>
+        <cite id="panel-quote-ref" class="quote-card__ref">— Filipenses 4,13</cite>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row" aria-label="Estatísticas do mês">
+        <div class="stat-box">
+          <div id="stat-count" class="stat-box__value">0</div>
+          <div class="stat-box__label">Missas este mês</div>
+        </div>
+        <div class="stat-box">
+          <div id="stat-streak" class="stat-box__value">0</div>
+          <div class="stat-box__label">Domingos seguidos</div>
+        </div>
+      </div>
+
+      <!-- Velas do ciclo dominical -->
+      <div class="candles-section" aria-label="Domingos de Maio">
+        <div class="candles-section__title">Domingos de Maio</div>
+        <div id="candles-container" class="candles-row" aria-label="Velas dos domingos"></div>
+      </div>
+
+      <!-- Divisor -->
+      <div class="ornamental-divider page-padding" aria-hidden="true">
+        <span class="ornamental-divider__symbol">✦</span>
+      </div>
+
+      <!-- Botão principal de registro -->
+      <button
+        id="btn-register"
+        class="btn-register btn-register--disabled"
+        aria-label="Registrar presença deste domingo"
+        disabled
+      >
+        <span class="btn-register__icon">☩</span>
+        O registro abre no próximo domingo
+      </button>
+
+      <!-- Divisor -->
+      <div class="ornamental-divider page-padding" aria-hidden="true">
+        <span class="ornamental-divider__symbol">⛨</span>
+      </div>
+
+      <!-- Seção do certificado -->
+      <div class="section" aria-label="Certificado de Perseverança">
+        <div class="section-label" style="margin-bottom: 12px; text-align:center;">Pergaminho de Perseverança</div>
+        <div id="certificate-container">
+          <!-- Preenchido dinamicamente por certificate.js -->
+        </div>
+      </div>
+
+    </div><!-- /tab-inicio -->
+
+
+    <!-- ── ABA: CONFRARIA (progresso coletivo) ─────────── -->
+    <div id="tab-confraria" class="tab-content tab--hidden" role="tabpanel" aria-label="Confraria">
+
+      <div class="confraria-header">
+        <h2 class="ranking-title" style="color: var(--cream);">A Confraria</h2>
+        <div class="ranking-month">Progresso coletivo de Maio</div>
+      </div>
+
+      <!-- Painel "Este Domingo" -->
+      <div class="confraria-section" aria-label="Presença deste domingo">
+        <div class="confraria-section__title">Este Domingo</div>
+        <p id="today-message" class="text-cream-dim" style="text-align:center; font-family:var(--font-body); font-size:14px; margin-bottom:16px;">
+          Aguardando o próximo domingo...
+        </p>
+        <div id="orbs-container" class="orbs-row" aria-label="Membros presentes hoje"></div>
+      </div>
+
+      <!-- Mensagem de glória (todos presentes) -->
+      <div id="glory-message" class="glory-message" role="alert" aria-live="polite">
+        ✦ A Confraria perseverou unida neste domingo.<br>
+        <em>Gloria in Excelsis Deo.</em>
+      </div>
+
+      <!-- Fidelidade coletiva do mês -->
+      <div class="confraria-section" aria-label="Fidelidade do mês">
+        <div class="confraria-section__title">Fidelidade do Mês</div>
+        <div id="fidelity-percentage" class="fidelity-percentage">0%</div>
+        <div class="fidelity-bar-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          <div id="fidelity-bar" class="fidelity-bar-fill"></div>
+        </div>
+        <div class="fidelity-stats">
+          <span id="fidelity-stats">0 de 0 presenças possíveis</span>
+          <span class="text-gold">de assiduidade</span>
+        </div>
+      </div>
+
+      <!-- Mini-velas dos membros (quem está presente hoje) -->
+      <div class="confraria-section" aria-label="Presença dos membros hoje">
+        <div class="confraria-section__title">Presenças de Hoje</div>
+        <div id="confraria-candles" class="orbs-row" aria-label="Membros e presença de hoje"></div>
+      </div>
+
+    </div><!-- /tab-confraria -->
+
+
+    <!-- ── ABA: RANKING ─────────────────────────────────── -->
+    <div id="tab-ranking" class="tab-content tab--hidden" role="tabpanel" aria-label="Ranking">
+
+      <div class="ranking-header">
+        <h2 class="ranking-title">Ordem da Perseverança</h2>
+        <div id="ranking-month" class="ranking-month">Maio de 2026</div>
+      </div>
+
+      <div class="ornamental-divider page-padding" aria-hidden="true">
+        <span class="ornamental-divider__symbol">✦</span>
+      </div>
+
+      <div id="ranking-list" class="ranking-list" role="list" aria-label="Classificação dos membros">
+        <!-- Preenchido dinamicamente por ui.js -->
+      </div>
+
+    </div><!-- /tab-ranking -->
+
+
+    <!-- ── ABA: HISTÓRICO ────────────────────────────────── -->
+    <div id="tab-historico" class="tab-content tab--hidden" role="tabpanel" aria-label="Histórico">
+
+      <div class="history-header">
+        <h2 class="ranking-title" style="color: var(--cream);">Histórico</h2>
+        <div id="history-month" class="ranking-month">Maio de 2026</div>
+      </div>
+
+      <div class="ornamental-divider page-padding" aria-hidden="true">
+        <span class="ornamental-divider__symbol">✦</span>
+      </div>
+
+      <div id="history-list" class="history-list" role="list" aria-label="Histórico do mês"></div>
+
+      <!--
+        TODO (v2): Timeline de meses anteriores
+        Aqui será exibida a lista de meses passados com:
+        - Mês e ano
+        - Campeão (quem teve mais presenças)
+        - Total de presenças coletivas
+        - Quem completou todas as missas
+        Dados disponíveis via: getMonthRecord(monthKey) + consulta de attendances por month_key
+      -->
+      <div class="history-future" aria-label="Recurso futuro">
+        <p>✦ Em breve: histórico completo dos meses anteriores</p>
+      </div>
+
+    </div><!-- /tab-historico -->
+
+
+    <!-- ── NAVEGAÇÃO INFERIOR (sempre visível no app) ──── -->
+    <nav class="bottom-nav" role="navigation" aria-label="Navegação principal">
+      <button class="nav-tab nav-tab--active" data-tab="inicio" aria-label="Início" id="nav-inicio">
+        <span class="nav-tab__icon" aria-hidden="true">☩</span>
+        <span class="nav-tab__label">Início</span>
+      </button>
+      <button class="nav-tab" data-tab="confraria" aria-label="Confraria" id="nav-confraria">
+        <span class="nav-tab__icon" aria-hidden="true">✦</span>
+        <span class="nav-tab__label">Confraria</span>
+      </button>
+      <button class="nav-tab" data-tab="ranking" aria-label="Ranking" id="nav-ranking">
+        <span class="nav-tab__icon" aria-hidden="true">⚜</span>
+        <span class="nav-tab__label">Ranking</span>
+      </button>
+      <button class="nav-tab" data-tab="historico" aria-label="Histórico" id="nav-historico">
+        <span class="nav-tab__icon" aria-hidden="true">⛨</span>
+        <span class="nav-tab__label">Histórico</span>
+      </button>
+    </nav>
+
+  </section><!-- /screen-app -->
+
+</div><!-- /app-container -->
+
+<!-- ─── TOAST DE NOTIFICAÇÃO ─────────────────────────────── -->
+<div id="toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+<!-- ─── SCRIPTS (ES Modules) ─────────────────────────────── -->
+<script type="module" src="js/app.js"></script>
+
+</body>
+</html>

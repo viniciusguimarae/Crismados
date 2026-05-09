@@ -1,0 +1,319 @@
+/* ============================================================
+   CONFRARIA DOS CRISMADOS — main.css
+   Sistema de design: variáveis, reset, tipografia, backgrounds
+   ============================================================ */
+
+/* --- Google Fonts --- */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap');
+
+/* --- Custom Properties / Design System --- */
+:root {
+  /* Cores principais */
+  --ink:          #0d0a07;
+  --ink-mid:      #1a1410;
+  --stone:        #1e1812;
+  --stone-light:  #2d2418;
+  --wine:         #6b1a2a;
+  --wine-deep:    #3d0d15;
+  --wine-hover:   #7d2035;
+  --gold:         #c9a84c;
+  --gold-light:   #e8c96d;
+  --gold-dim:     #8a6a28;
+  --gold-pale:    #f0d88a;
+  --cream:        #d4c5a0;
+  --cream-dim:    #9a8a6a;
+  --parchment:    #f0e8d0;
+  --parchment-mid:#e0d4b0;
+  --error:        #8b2a2a;
+  --success:      #2a5a3a;
+
+  /* Tipografia */
+  --font-display: 'Playfair Display', 'Georgia', serif;
+  --font-body:    'EB Garamond', 'Garamond', 'Times New Roman', serif;
+
+  /* Espaçamentos */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  32px;
+  --space-xxl: 48px;
+
+  /* Bordas */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  20px;
+  --radius-full: 9999px;
+
+  /* Bordas douradas */
+  --border-gold-faint:  1px solid rgba(201, 168, 76, 0.15);
+  --border-gold-subtle: 1px solid rgba(201, 168, 76, 0.25);
+  --border-gold-mid:    1px solid rgba(201, 168, 76, 0.40);
+  --border-gold-strong: 1px solid rgba(201, 168, 76, 0.65);
+
+  /* Sombras */
+  --shadow-gold-glow: 0 0 20px rgba(201, 168, 76, 0.15), 0 0 40px rgba(201, 168, 76, 0.07);
+  --shadow-wine-glow: 0 0 20px rgba(107, 26, 42, 0.3);
+  --shadow-card:      0 4px 24px rgba(0, 0, 0, 0.4);
+
+  /* Alturas dos elementos */
+  --bottom-nav-height: 64px;
+}
+
+/* --- Reset --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--ink);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* --- Textura de fundo (noise sutil via SVG URI) --- */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* --- Vignette nas bordas --- */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    transparent 40%,
+    rgba(0, 0, 0, 0.45) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* --- Warm glow no topo --- */
+.top-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    rgba(107, 26, 42, 0.18) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* --- Container principal --- */
+.app-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* --- Telas (screens) --- */
+.screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.screen--hidden {
+  display: none !important;
+}
+
+/* --- Abas do app principal --- */
+.tab-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: calc(var(--bottom-nav-height) + var(--space-md));
+  padding-top: var(--space-md);
+}
+
+.tab--hidden {
+  display: none !important;
+}
+
+/* --- Scroll suave --- */
+.scrollable {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+}
+
+/* --- Tipografia --- */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--cream);
+}
+
+h1 {
+  font-size: clamp(26px, 7vw, 36px);
+  letter-spacing: 0.5px;
+}
+
+h2 {
+  font-size: clamp(20px, 5.5vw, 28px);
+  letter-spacing: 0.5px;
+}
+
+h3 {
+  font-size: clamp(16px, 4.5vw, 22px);
+}
+
+p {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+/* --- Labels de seção (small caps decorativos) --- */
+.section-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--cream-dim);
+  font-weight: 500;
+}
+
+/* --- Divisor ornamental --- */
+.ornamental-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: var(--space-lg) 0;
+}
+
+.ornamental-divider::before,
+.ornamental-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+}
+
+.ornamental-divider__symbol {
+  color: var(--gold-dim);
+  font-size: 14px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* --- Padding de página --- */
+.page-padding {
+  padding: 0 var(--space-md);
+}
+
+/* --- Gold text --- */
+.text-gold {
+  color: var(--gold);
+}
+
+.text-gold-light {
+  color: var(--gold-light);
+}
+
+.text-cream-dim {
+  color: var(--cream-dim);
+}
+
+.text-cream {
+  color: var(--cream);
+}
+
+/* --- Flex utilities --- */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+.gap-lg { gap: var(--space-lg); }
+
+/* --- Text utilities --- */
+.text-center { text-align: center; }
+.italic { font-style: italic; }
+
+/* --- Loading overlay --- */
+#loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  gap: var(--space-lg);
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+#loading-overlay.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#loading-overlay.hidden {
+  display: none;
+}
+
+.loading-cross {
+  font-size: 32px;
+  color: var(--gold);
+  animation: pulse-gold 2s ease-in-out infinite;
+}
+
+.loading-text {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--cream-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* --- Scrollbar estilizada (webkit) --- */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ink);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--stone-light);
+  border-radius: var(--radius-full);
+}
